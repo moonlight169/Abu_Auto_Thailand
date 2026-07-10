@@ -30,19 +30,20 @@ void Encoder::handleB(){
 
 float Encoder::getRPM(){
     unsigned long now = millis();
-    float dtMin = (now - this->_lastTime) / 60000.0;
-    if (dtMin <= 0) dtMin = 0.0001;
+    unsigned long dt = now - this->_lastTime;
 
-    noInterrupts();
-    long currentCount = this->_count;
-    interrupts();
+    if (dt >= 20) {
+        float dtMin = dt / 60000.0;
 
-    float rpm = ((currentCount - this->_lastCount) / this->_ppr) / dtMin;
-    this->_rpm = rpm;
+        noInterrupts();
+        long currentCount = this->_count;
+        interrupts();
 
-    this->_lastTime = now;
-    this->_lastCount = currentCount;
-    return rpm;
+        this->_rpm = ((currentCount - this->_lastCount) / this->_ppr) / dtMin;
+        this->_lastTime = now;
+        this->_lastCount = currentCount;
+    }
+    return this->_rpm;
 }
 
 float Encoder::getDistance(float ppm){
