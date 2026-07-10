@@ -3,10 +3,16 @@
 
 class MecanumKinematics {
 public:
+    struct RPM {
+        float fl;
+        float fr;
+        float rl;
+        float rr;
+    };
+
     MecanumKinematics(float lrDistance, float frDistance, float wheelRadius);
 
-    void inverseKinematics(float vx, float vy, float omega, 
-                           float &fl, float &fr, float &rl, float &rr);
+    RPM getRPM(float vx, float vy, float omega);
 
 private:
     float _l;
