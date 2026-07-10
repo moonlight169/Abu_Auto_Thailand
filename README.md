@@ -20,5 +20,5 @@ by.Ittichai Wachiraphiphatkun
 ```text
 src/
  ├── master/         # โค้ดสำหรับ Teensy 4.1 (ประมวลผลเส้นทาง & ระบบนำทางอัตโนมัติ)
- └── slave_wheels/   # โค้ดสำหรับ STM32 (ควบคุมความเร็วมอเตอร์ล้อ & อ่านค่า Encoder)``
-```
+ └── slave_wheels/   # โค้ดสำหรับ STM32 (ควบคุมความเร็วมอเตอร์ล้อ & อ่านค่า Encoder)
+ ```
