@@ -3,12 +3,12 @@
 #include "config_wheels.h"
 #include "motor.h"
 #include "encoder.h"
+#include "wheel.h"
 
-Motor MT1(motor1_A, motor1_B);
-Encoder Encoder1(enc_A, enc_B, PULSE_PER_REV);
+Wheel wheel1(motor1_A, motor1_B, enc_A, enc_B, PULSE_PER_REV);
 
-void isrFL_A() { Encoder1.handleA(); }
-void isrFL_B() { Encoder1.handleB(); }
+void isrFL_A() { wheel1.handleA(); }
+void isrFL_B() { wheel1.handleB(); }
 
 
 void setup(){
@@ -18,12 +18,10 @@ void setup(){
 }
 
 void loop(){
-    MT1.smoothRun(100);
-    float rpm = Encoder1.getRPM();
-    long count = Encoder1.getCount();
+    wheel1.smoothRun(0);
 
-    Serial.print("Count: "); Serial.print(count);
-    Serial.print(" | RPM: "); Serial.println(rpm, 1);
+    Serial.print("Count: "); Serial.print(wheel1.getCount());
+    Serial.print(" | RPM: "); Serial.println(wheel1.getRPM(), 1);
 
     delay(100);
 }
