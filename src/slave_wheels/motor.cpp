@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "motor.h"
+#include "config_wheels.h"
 
-Motor::Motor(int pinA, int pinB, int maxRPM){
+Motor::Motor(int pinA, int pinB){
     this->_pinA = pinA;
     this->_pinB = pinB;
-    this->_maxRPM = maxRPM;
 
     analogWriteResolution(8);
     analogWriteFrequency(5000);
@@ -48,7 +48,7 @@ void Motor::run(){
     }
 }
 
-void Motor::smoothRun(int targetSpeed, int stepDelay) {
+void Motor::smoothRun(int targetSpeed) {
     int currentSpeed = this->getSpeed();
     
     if (currentSpeed < targetSpeed) {

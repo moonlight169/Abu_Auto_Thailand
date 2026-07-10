@@ -6,3 +6,5 @@
 
 #define MAX_RPM 300
 #define PULSE_PER_REV 844.8
+
+#define stepDelay 10

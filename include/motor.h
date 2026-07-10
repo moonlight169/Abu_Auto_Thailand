@@ -5,12 +5,12 @@
 
 class Motor{
 public:
-    Motor(int pinA, int pinB, int maxRPM);
+    Motor(int pinA, int pinB);
     void setspeed(int speed);
     int getSpeed();
     void run(int speed);
     void run();
-    void smoothRun(int targetSpeed, int stepDelay);
+    void smoothRun(int targetSpeed);
     ~Motor();
 
 private:
