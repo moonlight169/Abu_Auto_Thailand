@@ -25,4 +25,8 @@
 #define MAX_RPM 300
 #define PULSE_PER_REV 844.8
 
+#define LR_WHEELS_DISTANCE 0.395
+#define FR_WHEELS_DISTANCE 0.420
+#define WHEEL_RADIUS 0.050
+
 #define stepDelay 10

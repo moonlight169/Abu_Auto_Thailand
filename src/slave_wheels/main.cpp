@@ -4,7 +4,9 @@
 #include "motor.h"
 #include "encoder.h"
 #include "wheel.h"
+#include "mecanum_kinematics.h"
 
+MecanumKinematics kinematics(LR_WHEELS_DISTANCE, FR_WHEELS_DISTANCE, WHEEL_RADIUS);
 Wheel wheelFL(MotorFL_A, MotorFL_B, EncFL_A, EncFL_B, PULSE_PER_REV);
 
 void isrFL_A() { wheelFL.handleA(); }
