@@ -17,13 +17,7 @@ Motor::~Motor(){
 }
 
 void Motor::setspeed(int speed){
-    if (speed > 255) {
-        this->_speed = 255;
-    } else if (speed < -255){
-        this->_speed = -255;
-    } else {
-        this->_speed = speed;
-    }
+    this->_speed = constrain(speed, -255, 255);
 }
 
 int Motor::getSpeed(){
