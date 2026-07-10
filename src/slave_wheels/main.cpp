@@ -1,18 +1,17 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#include "config_wheels.h"
+#include "motor.h"
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+Motor MT1(motor1_A, motor1_B, MAX_RPM);
+
+void setup(){
+
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void loop(){
+    MT1.smoothRun(100, 10);
+    delay(4000);
+    MT1.smoothRun(-100, 10);
+    delay(4000);
 }

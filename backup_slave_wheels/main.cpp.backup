@@ -1,0 +1,74 @@
+#include <Arduino.h>
+
+#include "config_wheels.h"
+
+volatile long countMT = 0;
+
+unsigned long lastTime = 0;
+long lastCount = 0;
+
+void setMotor(int pinA, int pinB, int speed){
+  speed = constrain(speed, -255, 255);
+  if (speed > 0){
+    analogWrite(pinA, speed);
+    analogWrite(pinB, 0);
+  } else if (speed < 0){
+    analogWrite(pinA, 0);
+    analogWrite(pinB, -speed);
+  } else {
+    analogWrite(pinA, 0);
+    analogWrite(pinB, 0);
+  }
+}
+
+void isrMotor_A(){
+  if (digitalRead(enc_A) != digitalRead(enc_B)) countMT++;
+  else countMT--;
+}
+void isrMotor_B(){
+  if (digitalRead(enc_A) == digitalRead(enc_B)) countMT++;
+  else countMT--;
+}
+
+float getRPM(){
+  unsigned long now = millis();
+  float dtMin = (now - lastTime) / 60000.0;
+
+  noInterrupts();
+  long currentCount = countMT;
+  interrupts();
+
+  float rpm = ((currentCount - lastCount) / PULSE_PER_REV) / dtMin;
+
+  lastTime = now;
+  lastCount = currentCount;
+  return rpm;
+}
+
+void setup(){
+  Serial.begin(115200);
+
+  pinMode(motor1_A, OUTPUT);
+  pinMode(motor1_B, OUTPUT);
+  analogWriteFrequency(5000); 
+  pinMode(enc_A, INPUT_PULLUP);
+  pinMode(enc_B, INPUT_PULLUP);
+
+  attachInterrupt(digitalPinToInterrupt(enc_A), isrMotor_A, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(enc_B), isrMotor_B, CHANGE);
+
+  lastTime = millis();
+}
+
+void loop(){
+  setMotor(motor1_A, motor1_B, 100);
+
+  float rpm = getRPM();
+
+  Serial.print("Count: ");
+  Serial.print(countMT);
+  Serial.print(" | RPM: ");
+  Serial.println(rpm, 1);
+
+  delay(100);
+}
