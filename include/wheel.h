@@ -14,6 +14,7 @@ public:
     void handleA();
     void handleB();
     float getRPM();
+    int getPWM();
     float getDistance(float ppm);
     long getCount();
 

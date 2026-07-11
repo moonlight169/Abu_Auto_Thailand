@@ -24,6 +24,10 @@ float Wheel::getRPM(){
     return this->_encoder.getRPM();
 }
 
+int Wheel::getPWM(){
+    return this->_motor.getSpeed();
+}
+
 long Wheel::getCount(){
     return this->_encoder.getCount();
 }
