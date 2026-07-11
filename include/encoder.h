@@ -11,6 +11,7 @@ public:
     float getRPM();
     float getDistance(float ppm);
     long getCount();
+    void reset();
 
 private:
     int _pinA;

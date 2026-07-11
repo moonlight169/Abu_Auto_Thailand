@@ -28,6 +28,12 @@ void Encoder::handleB(){
     }
 }
 
+void Encoder::reset(){
+    noInterrupts();
+    this->_count = 0;
+    interrupts();
+}
+
 float Encoder::getRPM(){
     unsigned long now = millis();
     unsigned long dt = now - this->_lastTime;
