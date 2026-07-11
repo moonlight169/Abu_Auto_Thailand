@@ -75,6 +75,14 @@ MoveBase::BaseLog MoveBase::getLog() {
     return log;
 }
 
+void MoveBase::CountDebug() {
+    MoveBase::BaseLog data = this->getLog();
+    Serial.print("Count Log -> FL: ");  Serial.print(data.fl.count);
+    Serial.print(" | FR: ");            Serial.print(data.fr.count);
+    Serial.print(" | RL: ");            Serial.print(data.rl.count);
+    Serial.print(" | RR: ");            Serial.println(data.rr.count);
+}
+
 void MoveBase::RPMDebug() {
     MoveBase::BaseLog data = this->getLog();
     Serial.print("RPM -> FL: ");  Serial.print(data.fl.rpm, 1);

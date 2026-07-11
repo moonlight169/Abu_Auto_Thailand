@@ -26,6 +26,7 @@ public:
 
     BaseLog getLog();
     
+    void CountDebug();
     void RPMDebug();
     void PWMDebug();
 

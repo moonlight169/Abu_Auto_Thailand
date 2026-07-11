@@ -52,7 +52,8 @@ void loop() {
     robotDrive.move(0.000f, 0.000f, 0.000f);
 
     unsigned long now = millis();
-    if (now - lastLogTime >= 100) { 
+    if (now - lastLogTime >= 100) {
+        robotDrive.CountDebug(); 
         robotDrive.RPMDebug();
         robotDrive.PWMDebug();
         lastLogTime = now;
