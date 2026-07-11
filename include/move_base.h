@@ -20,6 +20,7 @@ public:
 
     MoveBase(Wheel& fl, Wheel& fr, Wheel& rl, Wheel& rr, MecanumKinematics& kinematics);
     void move(float vx, float vy, float omega);
+    void moveSmooth(float vx, float vy, float omega);
     void update();
     void stop();
 

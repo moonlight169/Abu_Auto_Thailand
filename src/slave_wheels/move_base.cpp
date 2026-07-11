@@ -17,6 +17,25 @@ void MoveBase::move(float vx, float vy, float omega) {
     int pwm_rl = constrain((req_rpm.rl / max_rpm) * 255, -255, 255);
     int pwm_rr = constrain((req_rpm.rr / max_rpm) * 255, -255, 255);
 
+    this->_fl.run(pwm_fl);
+    this->_fr.run(pwm_fr);
+    this->_rl.run(pwm_rl);
+    this->_rr.run(pwm_rr);
+}
+
+void MoveBase::moveSmooth(float vx, float vy, float omega) {
+    vx    = constrain(vx,    -1.000f, 1.000f);
+    vy    = constrain(vy,    -1.000f, 1.000f);
+    omega = constrain(omega, -1.500f, 1.500f);
+
+    MecanumKinematics::RPM req_rpm = this->_kinematics.getRPM(vx, vy, omega);
+    float max_rpm = 500.0f;
+
+    int pwm_fl = constrain((req_rpm.fl / max_rpm) * 255, -255, 255);
+    int pwm_fr = constrain((req_rpm.fr / max_rpm) * 255, -255, 255);
+    int pwm_rl = constrain((req_rpm.rl / max_rpm) * 255, -255, 255);
+    int pwm_rr = constrain((req_rpm.rr / max_rpm) * 255, -255, 255);
+
     this->_fl.smoothRun(pwm_fl);
     this->_fr.smoothRun(pwm_fr);
     this->_rl.smoothRun(pwm_rl);
