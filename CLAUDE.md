@@ -9,8 +9,10 @@
 - Control Algorithm: PID Control, Mecanum Kinematics
 
 # Project Structure
-ระบบเป็น Distributed System เชื่อมต่อผ่าน UART (JST-XH 4 pin) ประกอบด้วย 5 Environments:
-├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ
+ระบบเป็น Distributed System เชื่อมต่อแบบ Star Topology ผ่านสาย UART (JST-XH 4 pin) แยกอิสระต่อบอร์ด (Point-to-Point) 
+โดย Slave ทุกตัวจะต่อตรงเข้าหา Master โดยตรง (Slave 1 -> Master, Slave 2 -> Master, Slave 3 -> Master, Slave 4 -> Master)
+ประกอบด้วย 5 โฟลเดอร์แยก Environment ชัดเจน:
+├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (มี Hardware Serial 4 ช่อง แยกคุยกับแต่ละ Slave)
 ├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง)
 ├── 2_slave_lift/   # STM32: คุมชุดยกโซ่เฟือง 2 ตัว + ชุดแขน 2 ตัว
 ├── 3_slave_sensor/ # STM32: คุม Relay 4 ตัว + Servo 2 ตัว + อ่าน Limit Switch 7 ตัว
