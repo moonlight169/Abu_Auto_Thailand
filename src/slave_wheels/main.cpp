@@ -48,6 +48,7 @@ void setup(){
 }
 
 void loop() {
+    robotDrive.update();
     robotDrive.move(0.000f, 0.000f, 0.000f);
 
     unsigned long now = millis();

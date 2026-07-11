@@ -17,10 +17,17 @@ void MoveBase::move(float vx, float vy, float omega) {
     int pwm_rl = constrain((req_rpm.rl / max_rpm) * 255, -255, 255);
     int pwm_rr = constrain((req_rpm.rr / max_rpm) * 255, -255, 255);
 
-    this->_fl.run(pwm_fl);
-    this->_fr.run(pwm_fr);
-    this->_rl.run(pwm_rl);
-    this->_rr.run(pwm_rr);
+    this->_fl.smoothRun(pwm_fl);
+    this->_fr.smoothRun(pwm_fr);
+    this->_rl.smoothRun(pwm_rl);
+    this->_rr.smoothRun(pwm_rr);
+}
+
+void MoveBase::update() {
+    this->_fl.update();
+    this->_fr.update();
+    this->_rl.update();
+    this->_rr.update();
 }
 
 void MoveBase::stop() {

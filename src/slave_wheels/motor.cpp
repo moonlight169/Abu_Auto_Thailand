@@ -11,6 +11,9 @@ Motor::Motor(int pinA, int pinB){
     
     pinMode(pinA, OUTPUT);
     pinMode(pinB, OUTPUT);
+
+    this->_targetSpeed = 0;
+    this->_lastStepMillis = 0;
 }
 
 Motor::~Motor(){
@@ -43,19 +46,23 @@ void Motor::run(){
 }
 
 void Motor::smoothRun(int targetSpeed) {
-    int currentSpeed = this->getSpeed();
-    
-    if (currentSpeed < targetSpeed) {
-        while (currentSpeed < targetSpeed) {
-            currentSpeed++;
-            this->run(currentSpeed);
-            delay(stepDelay);
+    this->_targetSpeed = constrain(targetSpeed, -255, 255);
+}
+
+void Motor::update() {
+    unsigned long now = millis();
+
+    if (this->_speed < this->_targetSpeed) {
+        if (now - this->_lastStepMillis >= stepDelay) {
+            this->_speed++;
+            this->run();
+            this->_lastStepMillis = now;
         }
-    } else if (currentSpeed > targetSpeed) {
-        while (currentSpeed > targetSpeed) {
-            currentSpeed--;
-            this->run(currentSpeed);
-            delay(stepDelay);
+    } else if (this->_speed > this->_targetSpeed) {
+        if (now - this->_lastStepMillis >= stepDelay) {
+            this->_speed--;
+            this->run();
+            this->_lastStepMillis = now;
         }
     }
 }

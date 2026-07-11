@@ -11,6 +11,7 @@ public:
     void run(int speed);
     void run();
     void smoothRun(int targetSpeed);
+    void update();
     ~Motor();
 
 private:
@@ -18,6 +19,8 @@ private:
     int _pinB;
     int _speed = 0;
     int _maxRPM = 0;
+    int _targetSpeed = 0;
+    unsigned long _lastStepMillis = 0;
 
 };
 

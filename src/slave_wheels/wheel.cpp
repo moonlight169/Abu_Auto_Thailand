@@ -12,6 +12,10 @@ void Wheel::smoothRun(int targetSpeed){
     this->_motor.smoothRun(targetSpeed);
 }
 
+void Wheel::update(){
+    this->_motor.update();
+}
+
 void Wheel::handleA(){
     this->_encoder.handleA();
 }

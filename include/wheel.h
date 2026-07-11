@@ -11,6 +11,7 @@ public:
 
     void run(int speed);
     void smoothRun(int targetSpeed);
+    void update();
     void handleA();
     void handleB();
     float getRPM();
