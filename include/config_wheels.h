@@ -10,17 +10,17 @@
 #define MotorRR_A PB0
 #define MotorRR_B PB1
 
-#define EncFL_A PB6
-#define EncFL_B PB7
+#define EncFL_A PB7
+#define EncFL_B PB6
 
 #define EncFR_A PB4
 #define EncFR_B PB5
 
-#define EncRL_A PB14
-#define EncRL_B PB15
+#define EncRL_A PB15
+#define EncRL_B PB14
 
-#define EncRR_A PB13
-#define EncRR_B PB12
+#define EncRR_A PB12
+#define EncRR_B PB13
 
 #define MAX_RPM 300
 #define PULSE_PER_REV 844.8
