@@ -25,3 +25,19 @@ void sendWheelCommand(HardwareSerial &port, float vx, float vy, float omega){
     port.write(payloadBytes, sizeof(WheelCommand));
     port.write(checksum);
 }
+
+void sendServoCommand(HardwareSerial &port, uint8_t armAngle, uint8_t spinAngle){
+    ServoCommand cmd;
+    cmd.armAngle = armAngle;
+    cmd.spinAngle = spinAngle;
+
+    uint8_t payloadBytes[sizeof(ServoCommand)];
+    memcpy(payloadBytes, &cmd, sizeof(ServoCommand));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(ServoCommand));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)sizeof(ServoCommand));
+    port.write(payloadBytes, sizeof(ServoCommand));
+    port.write(checksum);
+}

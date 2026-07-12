@@ -6,11 +6,17 @@
 
 #define PROTOCOL_START_BYTE 0xAA
 #define WHEEL_CMD_LEN sizeof(WheelCommand)
+#define SERVO_CMD_LEN sizeof(ServoCommand)
 
 struct WheelCommand{
     float vx;
     float vy;
     float omega;
+};
+
+struct ServoCommand{
+   uint8_t armAngle;
+   uint8_t spinAngle;
 };
 
 struct WheelFrame{
@@ -37,9 +43,21 @@ struct WheelReceiver{
     unsigned long lastReceivedTime = 0;
 };
 
+struct ServoReceiver{
+    ParserState state = WAIT_START;
+    uint8_t buffer[sizeof(ServoCommand)];
+    uint8_t bufferIndex = 0;
+    uint8_t expectedLen = 0;
+    ServoCommand lastCommand;
+    bool hasNewCommand = false;
+    unsigned long lastReceivedTime = 0;
+};
+
 uint8_t calculateChecksum(const uint8_t* data, uint8_t len);
 void wheelReceiverFeed(WheelReceiver &receiver, uint8_t incomingByte);
 void sendWheelCommand(HardwareSerial &port, float vx, float vy, float omega);
 
+void servoReceiverFeed(ServoReceiver &receiver, uint8_t incomingByte);
+void sendServoCommand(HardwareSerial &port, uint8_t armAngle, uint8_t spinAngle);
 
 #endif
