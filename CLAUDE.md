@@ -18,6 +18,13 @@
 ├── 3_slave_sensor/ # STM32: คุม Relay 4 ตัว + Servo 2 ตัว + อ่าน Limit Switch 7 ตัว
 └── 4_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว (Active Low) + TOF 3 ตัว (UART)
 
+# UART Pin Mapping
+ 1. 1_slave_wheel PA9(tx1) PA10(rx1) -> 0_master 0(rx1) 1(tx1)
+ 2. 2_slave_lift PA9(tx1) PA10(rx1) -> 0_master 28(rx7) 29(tx7)
+ 3. 3_slave_sensor PA9(tx1) PA10(rx1) -> 0_master 21(rx5) 20(tx5)
+ 2. 4_slave_laser PA9(tx1) PA10(rx1) -> 0_master 34(rx8) 35(tx8)
+ *หมายเหตุ: ตรวจสอบทิศทาง TX->RX และ RX->TX ให้ถูกต้องเสมอ*
+
 # Coding Rules (กฎเหล็ก)
 1. **File Extension:** โฟลเดอร์ `include/` ใช้ `.h` เท่านั้น, โฟลเดอร์ `src/` ใช้ `.cpp` เท่านั้น
 2. **Readability:** เขียนโค้ดให้เข้าใจและไล่ง่ายมากกว่าเน้นโค้ดสั้น ห้ามยัดคำสั่งในบรรทัดเดียวจนอ่านยาก
