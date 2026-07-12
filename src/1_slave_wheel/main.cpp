@@ -43,8 +43,6 @@ void setup(){
 
     attachInterrupt(digitalPinToInterrupt(EncRR_A), isrRR_A, CHANGE);
     attachInterrupt(digitalPinToInterrupt(EncRR_B), isrRR_B, CHANGE);
-    
-    delay(2000);
 }
 
 void loop() {
