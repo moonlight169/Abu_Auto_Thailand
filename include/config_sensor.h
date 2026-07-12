@@ -4,8 +4,10 @@
 #define Relay_3 PB14
 #define Relay_4 PB15
 
-#define Servo_1 PB4
-#define Servo_2 PB5
+//arm
+#define arm_servo_pin PB4
+//spin
+#define spin_servo_pin PB5
 
 #define Light_sensor_1 PB6
 #define Light_sensor_2 PB7
