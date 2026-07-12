@@ -7,7 +7,7 @@
 Servo armServo;
 Servo spinServo;
 
-ServoReceiver servoReceiver;
+SensorLinkReceiver sensorReceiver;
 
 unsigned long lastLogTime = 0;
 
@@ -17,26 +17,45 @@ void setup(){
 
     armServo.attach(arm_servo_pin);
     spinServo.attach(spin_servo_pin);
+
+    pinMode(Relay_1, OUTPUT);
+    pinMode(Relay_2, OUTPUT);
+    pinMode(Relay_3, OUTPUT);
+    pinMode(Relay_4, OUTPUT);
+
+    digitalWrite(Relay_1, HIGH);
+    digitalWrite(Relay_2, HIGH);
+    digitalWrite(Relay_3, HIGH);
+    digitalWrite(Relay_4, HIGH);
 }
 
 void loop(){
     while (Serial1.available() > 0){
         uint8_t incomingByte = Serial1.read();
-        servoReceiverFeed(servoReceiver, incomingByte);
+        sensorLinkReceiverFeed(sensorReceiver, incomingByte);
     }
 
-    if (servoReceiver.hasNewCommand){
-        armServo.write(servoReceiver.lastCommand.armAngle);
-        spinServo.write(servoReceiver.lastCommand.spinAngle);
-        servoReceiver.hasNewCommand = false;
+    if (sensorReceiver.hasNewServoCommand){
+        armServo.write(sensorReceiver.lastServoCommand.armAngle);
+        spinServo.write(sensorReceiver.lastServoCommand.spinAngle);
+        sensorReceiver.hasNewServoCommand = false;
     }
 
+    if (sensorReceiver.hasNewRelayCommand){
+        uint8_t state = sensorReceiver.lastRelayCommand.relayState;
+        digitalWrite(Relay_1, (state & 0x01) ? LOW : HIGH);
+        digitalWrite(Relay_2, (state & 0x02) ? LOW : HIGH);
+        digitalWrite(Relay_3, (state & 0x04) ? LOW : HIGH);
+        digitalWrite(Relay_4, (state & 0x08) ? LOW : HIGH);
+        sensorReceiver.hasNewRelayCommand = false;
+    }
     unsigned long now = millis();
-    if (now - lastLogTime >= 100) {
-        Serial.print("ServoArm_degree: ");
-        Serial.println(servoReceiver.lastCommand.armAngle);
-        Serial.print("ServoSpin_degree: ");
-        Serial.println(servoReceiver.lastCommand.spinAngle);
+    if (now - lastLogTime >= 1000) {
+        uint8_t relayState = sensorReceiver.lastRelayCommand.relayState;
+        Serial.print("Relay1: ");  Serial.print((relayState & 0x01) ? "ON" : "OFF");
+        Serial.print(" | Relay2: "); Serial.print((relayState & 0x02) ? "ON" : "OFF");
+        Serial.print(" | Relay3: "); Serial.print((relayState & 0x04) ? "ON" : "OFF");
+        Serial.print(" | Relay4: "); Serial.println((relayState & 0x08) ? "ON" : "OFF");
         lastLogTime = now;
     }
 }
