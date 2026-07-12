@@ -1,3 +1,4 @@
+//Active LOW
 #define Relay_1 PB12
 #define Relay_2 PB13
 #define Relay_3 PB14
@@ -9,6 +10,7 @@
 #define Light_sensor_1 PB6
 #define Light_sensor_2 PB7
 
+//Active LOW
 #define L_SW_lift_fonttop_1 PB1
 #define L_SW_lift_fontbottom_3 PA6
 
