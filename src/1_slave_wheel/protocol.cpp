@@ -1,5 +1,6 @@
 #include <string.h>
 #include "protocol.h"
+#include <Arduino.h>
 
 uint8_t calculateChecksum(const uint8_t* data, uint8_t len){
     uint8_t checksum = 0;
@@ -40,6 +41,7 @@ void wheelReceiverFeed(WheelReceiver &receiver, uint8_t incomingByte){
             if (incomingByte == expectedChecksum) {
                 memcpy(&receiver.lastCommand, receiver.buffer, sizeof(WheelCommand));
                 receiver.hasNewCommand = true;
+                receiver.lastReceivedTime = millis();
             }
             receiver.state = WAIT_START;
             break;

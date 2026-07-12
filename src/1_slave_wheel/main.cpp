@@ -18,6 +18,7 @@ MoveBase robotDrive(wheelFL, wheelFR, wheelRL, wheelRR, kinematics);
 WheelReceiver wheelReceiver;
 
 unsigned long lastLogTime = 0;
+const unsigned long WHEEL_CMD_TIMEOUT_MS = 300;
 
 void isrFL_A() { wheelFL.handleA(); }
 void isrFL_B() { wheelFL.handleB(); }
@@ -61,6 +62,10 @@ void loop() {
                                 wheelReceiver.lastCommand.vy,
                                 wheelReceiver.lastCommand.omega);
         wheelReceiver.hasNewCommand = false;
+    }
+
+    if (millis() - wheelReceiver.lastReceivedTime > WHEEL_CMD_TIMEOUT_MS){
+        robotDrive.stop();
     }
 
     unsigned long now = millis();

@@ -2,6 +2,7 @@
 #define PROTOCOL_H
 
 #include <stdint.h>
+#include <Arduino.h>
 
 #define PROTOCOL_START_BYTE 0xAA
 #define WHEEL_CMD_LEN sizeof(WheelCommand)
@@ -33,9 +34,12 @@ struct WheelReceiver{
     uint8_t expectedLen = 0;
     WheelCommand lastCommand;
     bool hasNewCommand = false;
+    unsigned long lastReceivedTime = 0;
 };
 
 uint8_t calculateChecksum(const uint8_t* data, uint8_t len);
 void wheelReceiverFeed(WheelReceiver &receiver, uint8_t incomingByte);
+void sendWheelCommand(HardwareSerial &port, float vx, float vy, float omega);
+
 
 #endif
