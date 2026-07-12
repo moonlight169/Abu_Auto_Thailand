@@ -1,5 +1,5 @@
-#define MotorFL_A PA0
-#define MotorFL_B PA1
+#define MotorFL_A PA1
+#define MotorFL_B PA0
 
 #define MotorFR_A PA2
 #define MotorFR_B PA3
