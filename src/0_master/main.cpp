@@ -11,8 +11,22 @@ unsigned long lastRelaySendTime = 0;
 const unsigned long RELAY_SEND_INTERVAL_MS = 50;
 
 void setup() {
+  //monitor
   Serial.begin(115200);
+
+  //wheels
   Serial1.begin(115200);
+
+  //arm
+  Serial2.begin(115200);
+
+  //lift
+  Serial7.begin(115200);
+
+  //laser
+  Serial4.begin(115200);
+
+  //sensor
   Serial8.begin(115200);
 }
 void loop() {

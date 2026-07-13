@@ -12,6 +12,7 @@ public:
     void run();
     void smoothRun(int targetSpeed);
     void update();
+    void lock();
     ~Motor();
 
 private:

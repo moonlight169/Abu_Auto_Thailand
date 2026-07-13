@@ -13,4 +13,4 @@
 #define Light_sensor_2 PB7
 
 //Active LOW
-#define L_SW_fontrobot_6 PB1
+#define L_SW_frontrobot_6 PB1
