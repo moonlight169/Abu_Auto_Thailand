@@ -139,6 +139,13 @@ long Lift::getBackCount(){
     return this->_encoderBack.getCount();
 }
 
+void Lift::CountDebug(){
+    Serial.print("Lift Count -> Front: ");
+    Serial.print(this->getFrontCount());
+    Serial.print(" | Back: ");
+    Serial.println(this->getBackCount());
+}
+
 bool Lift::isBusy(){
     return this->_state != LIFT_IDLE;
 }

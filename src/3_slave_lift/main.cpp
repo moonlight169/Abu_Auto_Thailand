@@ -11,6 +11,8 @@ void isrEncFrontB() { lift.handleFrontB(); }
 void isrEncBackA()  { lift.handleBackA(); }
 void isrEncBackB()  { lift.handleBackB(); }
 
+unsigned long lastLogTime = 0;
+
 void setup(){
     Serial.begin(115200);
 
@@ -24,4 +26,9 @@ void setup(){
 
 void loop() {
     lift.update();
+
+    if (millis() - lastLogTime >= 100){
+        lift.CountDebug();
+        lastLogTime = millis();
+    }
 }

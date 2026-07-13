@@ -32,6 +32,7 @@ public:
     long getBackCount();
     bool isBusy();
     bool atTarget();
+    void CountDebug();
 
 private:
     Motor _motorFront;
