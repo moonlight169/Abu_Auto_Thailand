@@ -5,10 +5,15 @@ const int LIFT_HOME_SPEED = 60;
 
 const long LIFT_PULSE_TOLERANCE = 20;
 
-//TODO: ค่าเริ่มต้น ยังไม่ tune กับของจริง
-const float LIFT_PID_KP = 0.08;
-const float LIFT_PID_KI = 0.02;
-const float LIFT_PID_KD = 0.01;
+//TODO: ค่าเริ่มต้น ยังไม่ tune กับของจริง แยก front/back เพราะน้ำหนักโหลดสองฝั่งไม่เท่ากัน
+const float LIFT_PID_KP_FRONT = 0.08;
+const float LIFT_PID_KI_FRONT = 0.02;
+const float LIFT_PID_KD_FRONT = 0.01;
+
+const float LIFT_PID_KP_BACK = 0.08;
+const float LIFT_PID_KI_BACK = 0.02;
+const float LIFT_PID_KD_BACK = 0.01;
+
 const int LIFT_PID_OUT_MIN = -255;
 const int LIFT_PID_OUT_MAX = 255;
 
@@ -19,8 +24,8 @@ Lift::Lift(int frontMotorA, int frontMotorB, int backMotorA, int backMotorB,
       _motorBack(backMotorA, backMotorB),
       _encoderFront(encFrontA, encFrontB, 1.0),
       _encoderBack(encBackA, encBackB, 1.0),
-      _pidFront(LIFT_PID_KP, LIFT_PID_KI, LIFT_PID_KD, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX),
-      _pidBack(LIFT_PID_KP, LIFT_PID_KI, LIFT_PID_KD, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX){
+      _pidFront(LIFT_PID_KP_FRONT, LIFT_PID_KI_FRONT, LIFT_PID_KD_FRONT, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX),
+      _pidBack(LIFT_PID_KP_BACK, LIFT_PID_KI_BACK, LIFT_PID_KD_BACK, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX){
 
     this->_swFrontTop = swFrontTop;
     this->_swFrontBottom = swFrontBottom;
