@@ -12,9 +12,10 @@ by.Ittichai Wachiraphiphatkun
 
 ```
 Slave 1 (Wheel)  ---UART--->
-Slave 2 (Lift)   ---UART--->  Master (Teensy 4.1)
-Slave 3 (Sensor) ---UART--->
-Slave 4 (Laser)  ---UART--->
+Slave 2 (Arm)    ---UART--->
+Slave 3 (Lift)   ---UART--->  Master (Teensy 4.1)
+Slave 4 (Sensor) ---UART--->
+Slave 5 (Laser)  ---UART--->
 ```
 
 ## 🛠️ Hardware & Tech Stack
@@ -27,21 +28,25 @@ Slave 4 (Laser)  ---UART--->
 ## 📂 Project Structure
 
 ```text
-├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (Hardware Serial แยกคุยกับแต่ละ Slave)
+├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (HardwareSerial 5 ช่อง แยกคุยกับแต่ละ Slave)
 ├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง)
-├── 2_slave_lift/   # STM32: คุมชุดยกโซ่เฟือง 2 ตัว + ชุดแขน 2 ตัว
-├── 3_slave_sensor/ # STM32: คุม Relay 4 ตัว + Servo 2 ตัว + อ่าน Limit Switch 7 ตัว
-└── 4_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว (Active Low) + TOF 3 ตัว (UART)
+├── 2_slave_arm/    # STM32: คุมชุดแขน (Up/Down) up คือหมุนคีบ down หมุนตัวคีบ + Limit Switch 4 ตัว (front/back)
+├── 3_slave_lift/   # STM32: คุมชุดยก (Front/back) + Limit Switch 4 ตัว (up/down)
+├── 4_slave_sensor/ # STM32: คุม Relay 4 ตัว + Servo 2 ตัว + Limit Switch 1 ตัว (fontRobot) + Light 2 ตัว + TOF 1 ตัว
+└── 5_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว + TOF 2 ตัว (UART)
 ```
+
+> เหตุผลที่แยก `2_slave_lift` เดิมออกเป็น `2_slave_arm` + `3_slave_lift`: limit switch ของมอเตอร์ต้องอยู่บอร์ดเดียวกับมอเตอร์ที่มันควบคุม เพื่อตัด latency จากการส่งผ่าน UART ไป-กลับผ่าน master ซึ่งทำให้หยุดมอเตอร์ไม่ทัน
 
 ## 🔌 UART Pin Mapping
 
 | Slave           | Slave Pin (TX/RX) | Master Pin (RX/TX)      |
 |-----------------|--------------------|--------------------------|
-| 1_slave_wheel   | PA9(tx1)/PA10(rx1) | 0(rx1)/1(tx1)   — Serial1 |
-| 2_slave_lift    | PA9(tx1)/PA10(rx1) | 28(rx7)/29(tx7) — Serial7 |
-| 3_slave_sensor  | PA9(tx1)/PA10(rx1) | 21(rx5)/20(tx5) — Serial5 |
-| 4_slave_laser   | PA9(tx1)/PA10(rx1) | 34(rx8)/35(tx8) — Serial8 |
+| 1_slave_wheel   | PA9(TX)/PA10(RX)   | 0(RX1)/1(TX1)   — Serial1 |
+| 2_slave_arm     | PA9(TX)/PA10(RX)   | 7(RX2)/8(TX2)   — Serial2 |
+| 3_slave_lift    | PA9(TX)/PA10(RX)   | 28(RX7)/29(TX7) — Serial7 |
+| 4_slave_sensor  | PA9(TX)/PA10(RX)   | 16(RX4)/17(TX4) — Serial4 |
+| 5_slave_laser   | PA9(TX)/PA10(RX)   | 21(RX5)/20(TX5) — Serial5 |
 
 > หมายเหตุ: ตรวจสอบทิศทาง TX->RX และ RX->TX ให้ถูกต้องเสมอ
 
@@ -54,7 +59,7 @@ Slave 4 (Laser)  ---UART--->
 START | LEN | PAYLOAD (WheelCommand: vx, vy, omega) | CHECKSUM
 ```
 
-**สาย sensor (Master ↔ 3_slave_sensor)** — รวม 2 คำสั่ง (Servo, Relay) บนสายเดียวกัน จึงมี **Command ID** แทรกเพื่อแยกแยะ:
+**สาย sensor (Master ↔ 4_slave_sensor)** — รวม 2 คำสั่ง (Servo, Relay) บนสายเดียวกัน จึงมี **Command ID** แทรกเพื่อแยกแยะ:
 ```
 START | CMD_ID | LEN | PAYLOAD (ServoCommand หรือ RelayCommand) | CHECKSUM
 ```
@@ -67,11 +72,12 @@ START | CMD_ID | LEN | PAYLOAD (ServoCommand หรือ RelayCommand) | CHECKS
 
 | Environment       | สถานะ | รายละเอียด |
 |--------------------|--------|-------------|
-| `0_master`         | 🟡 บางส่วน | เปิด UART ครบ (`Serial1`, `Serial5`), ส่งคำสั่งทดสอบ Wheel/Servo/Relay อยู่ ยังไม่มี logic อ่านอินพุตควบคุมจริง (จอย/รีโมท) และยังไม่คุยกับ `2_slave_lift`/`4_slave_laser` |
+| `0_master`         | 🟡 บางส่วน | เปิด UART แค่ `Serial1` (wheel) และ `Serial8` (สายทดสอบไป sensor — ยังไม่ตรงกับ pin mapping ที่ออกแบบไว้คือ `Serial4`) ส่งคำสั่งทดสอบ Wheel/Servo/Relay อยู่ ยังไม่มี logic อ่านอินพุตควบคุมจริง (จอย/รีโมท) และยังไม่คุยกับ `2_slave_arm`/`3_slave_lift`/`5_slave_laser` |
 | `1_slave_wheel`    | 🟢 ใช้งานได้ | รับคำสั่งผ่าน `Serial1`, ขับ Mecanum ด้วย `moveSmooth()`, มี Failsafe timeout |
-| `2_slave_lift`     | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
-| `3_slave_sensor`   | 🟢 ใช้งานได้ | รับคำสั่ง Servo + Relay ผ่าน `Serial1` (multiplexed ด้วย Command ID), ควบคุม Servo 2 ตัว + Relay 4 ตัว (Active LOW) จริง |
-| `4_slave_laser`    | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
+| `2_slave_arm`      | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า (แยกออกมาจาก `2_slave_lift` เดิม) |
+| `3_slave_lift`     | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
+| `4_slave_sensor`   | 🟢 ใช้งานได้ | รับคำสั่ง Servo + Relay ผ่าน `Serial1` (multiplexed ด้วย Command ID), ควบคุม Servo 2 ตัว + Relay 4 ตัว (Active LOW) จริง (ชื่อโฟลเดอร์เปลี่ยนจาก `3_slave_sensor` เดิม) |
+| `5_slave_laser`    | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
 
 ## 📏 Coding Rules
 
