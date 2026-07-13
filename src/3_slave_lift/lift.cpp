@@ -107,11 +107,12 @@ void Lift::update(){
         }
     }
     else if (this->_state == LIFT_MOVING){
+        //error บวก (ต้องการ count เพิ่ม = ต้องขึ้น) ต้องสั่ง speed ลบ ตาม convention เดิมของฮาร์ดแวร์ตัวนี้
         int frontOutput = this->_pidFront.compute(this->_targetPulse, this->_encoderFront.getCount());
-        this->_motorFront.run(frontOutput);
+        this->_motorFront.run(-frontOutput);
 
         int backOutput = this->_pidBack.compute(this->_targetPulse, this->_encoderBack.getCount());
-        this->_motorBack.run(backOutput);
+        this->_motorBack.run(-backOutput);
     }
 }
 

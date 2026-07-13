@@ -12,8 +12,16 @@ void isrEncBackA()  { lift.handleBackA(); }
 void isrEncBackB()  { lift.handleBackB(); }
 
 unsigned long lastLogTime = 0;
+bool testLiftSent = false;
 
 void setup(){
+    //ยกตัวขึ้น
+    // if (!frontTop) liftFront.run(-120); else liftFront.run(0);
+    // if (!backTop)  liftBack.run(-100);  else liftBack.run(0);
+
+    //ยกตัวลง
+    // if (!frontBottom) liftFront.run(30); else liftFront.run(0);
+    // if (!backBottom)  liftBack.run(30);  else liftBack.run(0);
     Serial.begin(115200);
 
     attachInterrupt(digitalPinToInterrupt(enc_lift_frontA), isrEncFrontA, CHANGE);
@@ -26,6 +34,11 @@ void setup(){
 
 void loop() {
     lift.update();
+
+    if (!lift.isBusy() && !testLiftSent){
+        lift.liftTo(5000);
+        testLiftSent = true;
+    }
 
     if (millis() - lastLogTime >= 100){
         lift.CountDebug();
