@@ -27,6 +27,9 @@ void setup(){
     digitalWrite(Relay_2, HIGH);
     digitalWrite(Relay_3, HIGH);
     digitalWrite(Relay_4, HIGH);
+
+    armServo.write(0);
+    spinServo.write(5);
 }
 
 void loop(){
@@ -51,6 +54,9 @@ void loop(){
     }
     unsigned long now = millis();
     if (now - lastLogTime >= 1000) {
+        Serial.println(sensorReceiver.lastServoCommand.armAngle);
+        Serial.println(sensorReceiver.lastServoCommand.spinAngle);
+
         uint8_t relayState = sensorReceiver.lastRelayCommand.relayState;
         Serial.print("Relay1: ");  Serial.print((relayState & 0x01) ? "ON" : "OFF");
         Serial.print(" | Relay2: "); Serial.print((relayState & 0x02) ? "ON" : "OFF");

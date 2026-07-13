@@ -9,21 +9,22 @@
 - Control Algorithm: PID Control, Mecanum Kinematics
 
 # Project Structure
-ระบบเป็น Distributed System เชื่อมต่อแบบ Star Topology ผ่านสาย UART (JST-XH 4 pin) แยกอิสระต่อบอร์ด (Point-to-Point) 
-โดย Slave ทุกตัวจะต่อตรงเข้าหา Master โดยตรง (Slave 1 -> Master, Slave 2 -> Master, Slave 3 -> Master, Slave 4 -> Master)
-ประกอบด้วย 5 โฟลเดอร์แยก Environment ชัดเจน:
-├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (มี Hardware Serial 4 ช่อง แยกคุยกับแต่ละ Slave)
-├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง)
-├── 2_slave_lift/   # STM32: คุมชุดยกโซ่เฟือง 2 ตัว + ชุดแขน 2 ตัว
-├── 3_slave_sensor/ # STM32: คุม Relay 4 ตัว + Servo 2 ตัว + อ่าน Limit Switch 7 ตัว
-└── 4_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว (Active Low) + TOF 3 ตัว (UART)
+ระบบเป็น Distributed System เชื่อมต่อแบบ Star Topology ผ่านสาย UART (JST-XH 4 pin) แยกอิสระต่อบอร์ด (Point-to-Point)
+โดย Slave ทุกตัวจะต่อตรงเข้าหา Master โดยตรง (Slave 1-5 -> Master)
+ประกอบด้วย 6 โฟลเดอร์แยก Environment ชัดเจน:
+├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (มี HardwareSerial 5 ช่อง แยกคุยกับแต่ละ Slave) 
+├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง) 
+├── 2_slave_arm/    # STM32: คุมชุดแขน (Up/Down) up คือ หมุนคีบ down หมุนตัวคีบ Limit Switch 4 (fornt/back) ตัว 
+├── 3_slave_lift/   # STM32: คุมชุดยก (Front/back) Limit Switch 4 (up/down)
+├── 4_slave_sensor/ # STM32: คุม Relay 4 ตัว, Servo 2 ตัว, Limit Switch 1 ตัว (fontRobot) Light 2 ตัว TOF 1 ตัว (UART)
+└── 5_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว และ TOF 2 ตัว (UART)
 
 # UART Pin Mapping
- 1. 1_slave_wheel PA9(tx1) PA10(rx1) -> 0_master 0(rx1) 1(tx1)
- 2. 2_slave_lift PA9(tx1) PA10(rx1) -> 0_master 28(rx7) 29(tx7)
- 3. 3_slave_sensor PA9(tx1) PA10(rx1) -> 0_master 21(rx5) 20(tx5)
- 2. 4_slave_laser PA9(tx1) PA10(rx1) -> 0_master 34(rx8) 35(tx8)
- *หมายเหตุ: ตรวจสอบทิศทาง TX->RX และ RX->TX ให้ถูกต้องเสมอ*
+ 1. 1_slave_wheel  PA9(TX) PA10(RX) -> 0_master 0(RX1) 1(TX1)
+ 2. 2_slave_arm    PA9(TX) PA10(RX) -> 0_master 7(RX2) 8(TX2)
+ 3. 3_slave_lift   PA9(TX) PA10(RX) -> 0_master 28(RX7) 29(TX7)
+ 4. 4_slave_sensor PA9(TX) PA10(RX) -> 0_master 16(RX4) 17(TX4)
+ 5. 5_slave_laser  PA9(TX) PA10(RX) -> 0_master 21(RX5) 20(TX5)
 
 # Coding Rules (กฎเหล็ก)
 1. **File Extension:** โฟลเดอร์ `include/` ใช้ `.h` เท่านั้น, โฟลเดอร์ `src/` ใช้ `.cpp` เท่านั้น

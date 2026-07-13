@@ -13,7 +13,7 @@ const unsigned long RELAY_SEND_INTERVAL_MS = 50;
 void setup() {
   Serial.begin(115200);
   Serial1.begin(115200);
-  Serial5.begin(115200);
+  Serial8.begin(115200);
 }
 void loop() {
   unsigned long now = millis();
@@ -23,15 +23,15 @@ void loop() {
   }
 
   if (now - lastServoSendTime >= SERVO_SEND_INTERVAL_MS){
-    sendServoCommand(Serial5, 0, 0);
+    sendServoCommand(Serial8, 0, 0);
     lastServoSendTime = now;
   }
 
   if (now - lastRelaySendTime >= RELAY_SEND_INTERVAL_MS){
-    sendRelayCommand(Serial5, 1, HIGH);
-    sendRelayCommand(Serial5, 2, HIGH);
-    sendRelayCommand(Serial5, 3, HIGH);
-    sendRelayCommand(Serial5, 4, HIGH);
+    sendRelayCommand(Serial8, 1, LOW);
+    sendRelayCommand(Serial8, 2, LOW);
+    sendRelayCommand(Serial8, 3, HIGH);
+    sendRelayCommand(Serial8, 4, HIGH);
 
     lastRelaySendTime = now;
 }
