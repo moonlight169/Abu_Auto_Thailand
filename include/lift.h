@@ -20,7 +20,8 @@ public:
          int swFrontTop, int swFrontBottom, int swBackTop, int swBackBottom);
 
     void setZero();
-    void liftTo(long targetPulse);
+    void liftTo(long pulseFront, long pulseBack);
+    void liftToMM(float mmFront, float mmBack);
     void stop();
     void update();
 
@@ -34,6 +35,7 @@ public:
     bool isBusy();
     bool atTarget();
     void CountDebug();
+    void PWMDebug();
 
 private:
     Motor _motorFront;
@@ -49,7 +51,8 @@ private:
     int _swBackBottom;
 
     LiftState _state = LIFT_IDLE;
-    long _targetPulse = 0;
+    long _targetPulseFront = 0;
+    long _targetPulseBack = 0;
 
     bool _frontHomed = false;
     bool _backHomed = false;
