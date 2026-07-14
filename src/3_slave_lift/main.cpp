@@ -32,7 +32,7 @@ void loop() {
 
     if (millis() - lastLogTime >= 1000 / LOOP_HZ){
         if (!liftAll.isBusy() && !testLiftSent){
-            liftAll.liftTo(2000, 2000);
+            liftAll.liftToMM(200, 200);
             testLiftSent = true;
         }
         liftAll.CountDebug();
