@@ -74,8 +74,8 @@ START | CMD_ID | LEN | PAYLOAD (ServoCommand หรือ RelayCommand) | CHECKS
 |--------------------|--------|-------------|
 | `0_master`         | 🟡 บางส่วน | เปิด UART แค่ `Serial1` (wheel) และ `Serial8` (สายทดสอบไป sensor — ยังไม่ตรงกับ pin mapping ที่ออกแบบไว้คือ `Serial4`) ส่งคำสั่งทดสอบ Wheel/Servo/Relay อยู่ ยังไม่มี logic อ่านอินพุตควบคุมจริง (จอย/รีโมท) และยังไม่คุยกับ `2_slave_arm`/`3_slave_lift`/`5_slave_laser` |
 | `1_slave_wheel`    | 🟢 ใช้งานได้ | รับคำสั่งผ่าน `Serial1`, ขับ Mecanum ด้วย `moveSmooth()`, มี Failsafe timeout |
-| `2_slave_arm`      | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า (แยกออกมาจาก `2_slave_lift` เดิม) |
-| `3_slave_lift`     | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
+| `2_slave_arm`      | ⚪ ยังไม่เริ่ม | อ่าน Limit Switch 4 ตัว (up/down front/back) ได้แล้ว แต่ loop ควบคุมมอเตอร์ยัง comment ไว้ ยังไม่มี logic จริง |
+| `3_slave_lift`     | 🟡 บางส่วน | มี `Lift` class ควบคุม Front/Back ครบ: Homing ชนขา limit ล่างแล้ว reset encoder, PID แยก front/back, Safety Cutoff กันมอเตอร์วิ่งเลย limit, sync RPM front/back ตอน target เท่ากัน — `main.cpp` ยังเป็นโหมดทดสอบ (`liftTo()` hardcode) ยังไม่รับคำสั่งจาก Master ค่า `LIFT_STROKE_MM_*`, `LIFT_SYNC_KP`, `LIFT_HOLD_PWM` ยังต้อง tune จริงบนฮาร์ดแวร์ |
 | `4_slave_sensor`   | 🟢 ใช้งานได้ | รับคำสั่ง Servo + Relay ผ่าน `Serial1` (multiplexed ด้วย Command ID), ควบคุม Servo 2 ตัว + Relay 4 ตัว (Active LOW) จริง (ชื่อโฟลเดอร์เปลี่ยนจาก `3_slave_sensor` เดิม) |
 | `5_slave_laser`    | ⚪ ยังไม่เริ่ม | ไฟล์ยังเป็นเทมเพลตเปล่า |
 
