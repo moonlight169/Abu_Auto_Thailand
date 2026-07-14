@@ -5,12 +5,12 @@ const int LIFT_HOME_SPEED = 60;
 
 const long LIFT_PULSE_TOLERANCE = 5;
 
-const float LIFT_PID_KP_FRONT = 1.0;
-const float LIFT_PID_KI_FRONT = 0.035;
+const float LIFT_PID_KP_FRONT = 1.6;
+const float LIFT_PID_KI_FRONT = 0.045;
 const float LIFT_PID_KD_FRONT = 0.00;
 
-const float LIFT_PID_KP_BACK = 0.6;
-const float LIFT_PID_KI_BACK = 0.015;
+const float LIFT_PID_KP_BACK = 0.55;
+const float LIFT_PID_KI_BACK = 0.005;
 const float LIFT_PID_KD_BACK = 0.00;
 
 const int LIFT_PID_OUT_MIN = -255;
@@ -18,16 +18,16 @@ const int LIFT_PID_OUT_MAX = 255;
 
 //ช่วง pulse จริงที่วัดได้จากฮาร์ดแวร์ (อ้างอิงคอมเมนต์ใน config_lift.h)
 const long LIFT_FRONT_PULSE_MIN = 0;
-const long LIFT_FRONT_PULSE_MAX = 6500;
+const long LIFT_FRONT_PULSE_MAX = 4150;
 const long LIFT_BACK_PULSE_MIN = 0;
-const long LIFT_BACK_PULSE_MAX = 4200;
+const long LIFT_BACK_PULSE_MAX = 3600;
 
 //TODO: วัดระยะชักจริงจาก home ถึง top ของแต่ละฝั่ง (mm) ก่อนใช้ liftToMM()
-const float LIFT_STROKE_MM_FRONT = 410;
-const float LIFT_STROKE_MM_BACK = 410;
+const float LIFT_STROKE_MM_FRONT = 400;
+const float LIFT_STROKE_MM_BACK = 400;
 
 //TODO: tune - gain synchronize ให้ RPM front/back เท่ากันตอนสั่ง target เท่ากัน เริ่มจาก 0 แล้วค่อยไล่ขึ้น
-const float LIFT_SYNC_KP = 0.00;
+const float LIFT_SYNC_KP = 0.05;
 
 //TODO: tune - PWM อ่อนสุดที่ยังไหลลงจนแตะ limit switch ล่างได้ ใช้แทน PID ตอน target = 0
 const int LIFT_HOLD_PWM = 40;
@@ -40,7 +40,7 @@ Lift::Lift(int frontMotorA, int frontMotorB, int backMotorA, int backMotorB,
       _encoderFront(encFrontA, encFrontB, 1.0),
       _encoderBack(encBackA, encBackB, 1.0),
       _pidFront(LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX, LIFT_PID_KP_FRONT, LIFT_PID_KI_FRONT, LIFT_PID_KD_FRONT),
-      _pidBack(LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX, LIFT_PID_KP_BACK, LIFT_PID_KI_BACK, LIFT_PID_KD_BACK){
+      _pidBack(LIFT_PID_OUT_MIN + 35, LIFT_PID_OUT_MAX - 35, LIFT_PID_KP_BACK, LIFT_PID_KI_BACK, LIFT_PID_KD_BACK){
 
     this->_swFrontTop = swFrontTop;
     this->_swFrontBottom = swFrontBottom;

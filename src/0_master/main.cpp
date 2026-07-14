@@ -1,8 +1,15 @@
 #include <Arduino.h>
 #include "protocol.h"
+#include "TFminiS.h"
+#include "config_laser.h"
+
+TFminiS tofFront(Serial6);
 
 unsigned long lastSendTime = 0;
 const unsigned long SEND_INTERVAL_MS = 50;
+
+unsigned long lastTofReadTime = 0;
+const unsigned long TOF_READ_INTERVAL_MS = 20;
 
 unsigned long lastServoSendTime = 0;
 const unsigned long SERVO_SEND_INTERVAL_MS = 50;
@@ -28,6 +35,9 @@ void setup() {
 
   //sensor
   Serial8.begin(115200);
+
+  //tof front
+  Serial6.begin(115200);
 }
 void loop() {
   unsigned long now = millis();
@@ -48,5 +58,19 @@ void loop() {
     sendRelayCommand(Serial8, 4, HIGH);
 
     lastRelaySendTime = now;
-}
+  }
+
+  if (now - lastTofReadTime >= TOF_READ_INTERVAL_MS){
+    tofFront.readSensor();
+
+    int distanceFront = tofFront.getDistance();
+    if (distanceFront < 0){
+      Serial.println(TFminiS::getErrorString(distanceFront));
+    } else {
+      Serial.print("TOF_Front: ");
+      Serial.println(distanceFront);
+    }
+
+    lastTofReadTime = now;
+  }
 }
