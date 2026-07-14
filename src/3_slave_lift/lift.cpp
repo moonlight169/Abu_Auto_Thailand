@@ -6,13 +6,13 @@ const int LIFT_HOME_SPEED = 60;
 const long LIFT_PULSE_TOLERANCE = 20;
 
 //TODO: ค่าเริ่มต้น ยังไม่ tune กับของจริง แยก front/back เพราะน้ำหนักโหลดสองฝั่งไม่เท่ากัน
-const float LIFT_PID_KP_FRONT = 0.08;
-const float LIFT_PID_KI_FRONT = 0.02;
-const float LIFT_PID_KD_FRONT = 0.01;
+const float LIFT_PID_KP_FRONT = 0.00;
+const float LIFT_PID_KI_FRONT = 0.00;
+const float LIFT_PID_KD_FRONT = 0.00;
 
-const float LIFT_PID_KP_BACK = 0.08;
-const float LIFT_PID_KI_BACK = 0.02;
-const float LIFT_PID_KD_BACK = 0.01;
+const float LIFT_PID_KP_BACK = 0.00;
+const float LIFT_PID_KI_BACK = 0.00;
+const float LIFT_PID_KD_BACK = 0.00;
 
 const int LIFT_PID_OUT_MIN = -255;
 const int LIFT_PID_OUT_MAX = 255;
@@ -76,8 +76,6 @@ void Lift::applySafetyCutoff(){
 }
 
 void Lift::update(){
-    this->applySafetyCutoff();
-
     if (this->_state == LIFT_HOMING){
         bool frontBottom = (digitalRead(this->_swFrontBottom) == LOW);
         bool backBottom = (digitalRead(this->_swBackBottom) == LOW);
@@ -114,6 +112,8 @@ void Lift::update(){
         int backOutput = this->_pidBack.compute(this->_targetPulse, this->_encoderBack.getCount());
         this->_motorBack.run(-backOutput);
     }
+
+    this->applySafetyCutoff();
 }
 
 void Lift::handleFrontA(){

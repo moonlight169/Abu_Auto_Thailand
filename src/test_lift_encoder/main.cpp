@@ -22,11 +22,14 @@ void setup(){
 }
 
 void loop() {
+    int enf = encFront.getCount();
+    int enr = encBack.getCount();
     if (millis() - lastLogTime >= 100){
         Serial.print("Front: ");
-        Serial.print(encFront.getCount());
+        Serial.print(enf);
         Serial.print(" | Back: ");
-        Serial.println(encBack.getCount());
+        Serial.println(enr);
         lastLogTime = millis();
     }
+    
 }

@@ -35,13 +35,13 @@ void setup(){
 void loop() {
     lift.update();
 
-    if (!lift.isBusy() && !testLiftSent){
-        lift.liftTo(5000);
-        testLiftSent = true;
-    }
+    // if (!lift.isBusy() && !testLiftSent){
+    //     lift.liftTo(5000);
+    //     testLiftSent = true;
+    // }
 
-    if (millis() - lastLogTime >= 100){
-        lift.CountDebug();
-        lastLogTime = millis();
-    }
+    // if (millis() - lastLogTime >= 100){
+    //     lift.CountDebug();
+    //     lastLogTime = millis();
+    // }
 }
