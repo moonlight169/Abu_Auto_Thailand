@@ -24,8 +24,8 @@ Lift::Lift(int frontMotorA, int frontMotorB, int backMotorA, int backMotorB,
       _motorBack(backMotorA, backMotorB),
       _encoderFront(encFrontA, encFrontB, 1.0),
       _encoderBack(encBackA, encBackB, 1.0),
-      _pidFront(LIFT_PID_KP_FRONT, LIFT_PID_KI_FRONT, LIFT_PID_KD_FRONT, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX),
-      _pidBack(LIFT_PID_KP_BACK, LIFT_PID_KI_BACK, LIFT_PID_KD_BACK, LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX){
+      _pidFront(LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX, LIFT_PID_KP_FRONT, LIFT_PID_KI_FRONT, LIFT_PID_KD_FRONT),
+      _pidBack(LIFT_PID_OUT_MIN, LIFT_PID_OUT_MAX, LIFT_PID_KP_BACK, LIFT_PID_KI_BACK, LIFT_PID_KD_BACK){
 
     this->_swFrontTop = swFrontTop;
     this->_swFrontBottom = swFrontBottom;

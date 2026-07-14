@@ -2,9 +2,10 @@
 #define LIFT_H
 
 #include <Arduino.h>
+#include <PID.h>
+
 #include "motor.h"
 #include "encoder.h"
-#include "pid.h"
 
 enum LiftState {
     LIFT_IDLE,
