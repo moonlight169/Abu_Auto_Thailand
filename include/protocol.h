@@ -10,12 +10,16 @@
 #define SENSOR_LINK_BUFFER_SIZE (sizeof(ServoCommand) > sizeof(RelayCommand) ? sizeof(ServoCommand) : sizeof(RelayCommand))
 #define ARM_CMD_LEN sizeof(ArmCommand)
 #define ARM_FB_LEN sizeof(ArmFeedback)
+#define LASER_LINK_BUFFER_SIZE sizeof(LaserData)  // LaserData(10B) เป็น payload ที่ใหญ่ที่สุดในกลุ่ม Laser/Lsw/Light
 
 #define CMD_SERVO 0x01
 #define CMD_RELAY 0x02
 #define CMD_ARM   0x03
 #define CMD_ARM_FB 0x04
 #define CMD_ARM_CODE 0x05
+#define CMD_LASER 0x06
+#define CMD_LSW   0x07
+#define CMD_LIGHT 0x08
 
 struct WheelCommand{
     float vx;
@@ -45,9 +49,24 @@ struct ArmCodeCommand{
 };
 
 struct ArmFeedback{
-    uint8_t bottomAngle;  
-    uint8_t topAngle;   
-    uint8_t status;     
+    uint8_t bottomAngle;
+    uint8_t topAngle;
+    uint8_t status;
+};
+
+struct LaserData{
+    uint8_t header[5];  // ลำดับเซนเซอร์ 0-4
+    uint8_t data[5];    // ผลอ่าน digitalRead ต่อเซนเซอร์ (0/1)
+};
+
+struct LswData{
+    uint8_t header[1];
+    uint8_t data[1];    // ผลอ่าน digitalRead ของ L_SW_frontrobot_6
+};
+
+struct LightData{
+    uint8_t header[2];
+    uint8_t data[2];    // ผลอ่าน analogRead (ตั้ง analogReadResolution(8) ไว้ที่ 0-255)
 };
 
 struct WheelFrame{
@@ -120,6 +139,25 @@ struct ArmFeedbackReceiver{
     unsigned long lastReceivedTime = 0;
 };
 
+struct LaserLinkReceiver{
+    ParserState state = WAIT_START;
+    uint8_t cmdId = 0;
+    uint8_t buffer[LASER_LINK_BUFFER_SIZE];
+    uint8_t bufferIndex = 0;
+    uint8_t expectedLen = 0;
+
+    LaserData lastLaser;
+    bool hasNewLaser = false;
+
+    LswData lastLsw;
+    bool hasNewLsw = false;
+
+    LightData lastLight;
+    bool hasNewLight = false;
+
+    unsigned long lastReceivedTime = 0;
+};
+
 uint8_t calculateChecksum(const uint8_t* data, uint8_t len);
 void wheelReceiverFeed(WheelReceiver &receiver, uint8_t incomingByte);
 void sendWheelCommand(HardwareSerial &port, float vx, float vy, float omega);
@@ -133,5 +171,11 @@ void sendArmCommand(HardwareSerial &port, uint8_t code);
 
 void armFeedbackReceiverFeed(ArmFeedbackReceiver &receiver, uint8_t incomingByte);
 void sendArmFeedback(HardwareSerial &port, uint8_t bottomAngle, uint8_t topAngle, uint8_t status);
+
+void sendLaserData(HardwareSerial &port, const LaserData &laser);
+void sendLswData(HardwareSerial &port, const LswData &lsw);
+void sendLightData(HardwareSerial &port, const LightData &light);
+
+void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte);
 
 #endif

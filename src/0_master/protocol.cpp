@@ -88,3 +88,57 @@ void sendRelayCommand(HardwareSerial &port, uint8_t relayNumber, uint8_t status)
     port.write(payloadBytes, sizeof(RelayCommand));
     port.write(checksum);
 }
+
+void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte){
+    switch (receiver.state){
+        case WAIT_START:
+            if (incomingByte == PROTOCOL_START_BYTE){
+                receiver.state = READ_CMD_ID;
+            }
+            break;
+
+        case READ_CMD_ID:
+            receiver.cmdId = incomingByte;
+            receiver.state = READ_LEN;
+            break;
+
+        case READ_LEN:
+            receiver.expectedLen = incomingByte;
+            receiver.bufferIndex = 0;
+            if (receiver.expectedLen > 0 && receiver.expectedLen <= LASER_LINK_BUFFER_SIZE){
+                receiver.state = READ_PAYLOAD;
+            } else {
+                receiver.state = WAIT_START;
+            }
+            break;
+
+        case READ_PAYLOAD:
+            receiver.buffer[receiver.bufferIndex] = incomingByte;
+            receiver.bufferIndex++;
+            if (receiver.bufferIndex >= receiver.expectedLen){
+                receiver.state = READ_CHECKSUM;
+            }
+            break;
+
+        case READ_CHECKSUM: {
+            uint8_t expectedChecksum = calculateChecksum(receiver.buffer, receiver.expectedLen);
+            if (incomingByte == expectedChecksum){
+                if (receiver.cmdId == CMD_LASER && receiver.expectedLen == sizeof(LaserData)){
+                    memcpy(&receiver.lastLaser, receiver.buffer, sizeof(LaserData));
+                    receiver.hasNewLaser = true;
+                    receiver.lastReceivedTime = millis();
+                } else if (receiver.cmdId == CMD_LSW && receiver.expectedLen == sizeof(LswData)){
+                    memcpy(&receiver.lastLsw, receiver.buffer, sizeof(LswData));
+                    receiver.hasNewLsw = true;
+                    receiver.lastReceivedTime = millis();
+                } else if (receiver.cmdId == CMD_LIGHT && receiver.expectedLen == sizeof(LightData)){
+                    memcpy(&receiver.lastLight, receiver.buffer, sizeof(LightData));
+                    receiver.hasNewLight = true;
+                    receiver.lastReceivedTime = millis();
+                }
+            }
+            receiver.state = WAIT_START;
+            break;
+        }
+    }
+}

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "protocol.h"
 #include "TFminiS.h"
+#include "laser_sensors.h"
 
 TFminiS tofFront(Serial6);
 
@@ -19,6 +20,9 @@ const unsigned long RELAY_SEND_INTERVAL_MS = 50;
 unsigned long lastARMSendTime = 0;
 const unsigned long ARM_SEND_INTERVAL_MS = 50;
 
+unsigned long lastLaserReadTime = 0;
+const unsigned long LASER_READ_INTERVAL_MS = 500;
+
 void setup() {
   //monitor
   Serial.begin(115200);
@@ -29,17 +33,14 @@ void setup() {
   //arm
   Serial2.begin(115200);
 
-  // //lift
-  // Serial7.begin(115200);
+  //lift
+  Serial7.begin(115200);
 
-  // //laser
-  // Serial4.begin(115200);
+  //sensor
+  Serial4.begin(115200);
 
-  // //sensor
-  // Serial8.begin(115200);
-
-  // //tof front
-  // Serial6.begin(115200);
+  //laser
+  Serial8.begin(115200);
 }
 void loop() {
   unsigned long now = millis();
@@ -56,19 +57,45 @@ void loop() {
     lastARMSendTime = now;
   }
 
-  // if (now - lastServoSendTime >= SERVO_SEND_INTERVAL_MS){
-  //   sendServoCommand(Serial8, 0, 0);
-  //   lastServoSendTime = now;
-  // }
+  if (now - lastServoSendTime >= SERVO_SEND_INTERVAL_MS){
+    sendServoCommand(Serial4, 0, 0);
+    lastServoSendTime = now;
+  }
 
-  // if (now - lastRelaySendTime >= RELAY_SEND_INTERVAL_MS){
-  //   sendRelayCommand(Serial8, 1, LOW);
-  //   sendRelayCommand(Serial8, 2, LOW);
-  //   sendRelayCommand(Serial8, 3, HIGH);
-  //   sendRelayCommand(Serial8, 4, HIGH);
+  if (now - lastRelaySendTime >= RELAY_SEND_INTERVAL_MS){
+    sendRelayCommand(Serial4, 1, HIGH);
+    sendRelayCommand(Serial4, 2, HIGH);
+    sendRelayCommand(Serial4, 3, HIGH);
+    sendRelayCommand(Serial4, 4, HIGH);
 
-  //   lastRelaySendTime = now;
-  // }
+    lastRelaySendTime = now;
+  }
+
+  // 5_slave_laser เป็นบอร์ด Reader: ส่งข้อมูลเข้ามาเองทุก 50ms ทาง Serial8
+  // เรียก readLaserCommand()/readLswCommand()/readLightCommand() ตอนไหนก็ได้เพื่อดึงค่าล่าสุดที่รับมา
+  if (now - lastLaserReadTime >= LASER_READ_INTERVAL_MS){
+    lastLaserReadTime = now;
+
+    LaserData laser = readLaserCommand();
+    LswData lsw = readLswCommand();
+    LightData light = readLightCommand();
+
+    Serial.print("Laser: ");
+    for (uint8_t i = 0; i < sizeof(laser.data); i++){
+      Serial.print(laser.data[i]);
+      Serial.print(' ');
+    }
+
+    Serial.print(" Lsw: ");
+    Serial.print(lsw.data[0]);
+
+    Serial.print(" Light: ");
+    for (uint8_t i = 0; i < sizeof(light.data); i++){
+      Serial.print(light.data[i]);
+      Serial.print(' ');
+    }
+    Serial.println();
+  }
 
   // if (now - lastTofReadTime >= TOF_READ_INTERVAL_MS){
   //   tofFront.readSensor();
