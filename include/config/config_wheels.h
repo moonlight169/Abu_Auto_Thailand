@@ -24,10 +24,30 @@
 
 #define MAX_RPM 300
 #define PULSE_PER_REV 844.8
-#define PULSE_PER_METER 5380.89
 
 #define LR_WHEELS_DISTANCE 0.395
 #define FR_WHEELS_DISTANCE 0.420
-#define WHEEL_RADIUS 0.050
+#define WHEEL_RADIUS 0.1016
+#define WHEEL_DIAMETER (WHEEL_RADIUS * 2.0f)
+
+// PWM range for 8-bit resolution (0-255)
+#define PWM_MIN -255
+#define PWM_MAX 255
 
 #define stepDelay 10
+
+#define FL_K_P 0.65
+#define FL_K_I 0.0
+#define FL_K_D 0.01
+
+#define FR_K_P 0.65
+#define FR_K_I 0.0
+#define FR_K_D 0.01
+
+#define RL_K_P 0.65
+#define RL_K_I 0.0
+#define RL_K_D 0.01
+
+#define RR_K_P 0.65
+#define RR_K_I 0.0
+#define RR_K_D 0.01

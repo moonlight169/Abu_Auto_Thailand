@@ -2,6 +2,7 @@
 #define WHEEL_H
 
 #include <Arduino.h>
+#include "PID.h"
 #include "motor.h"
 #include "encoder.h"
 
