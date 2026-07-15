@@ -45,6 +45,22 @@ void sendServoCommand(HardwareSerial &port, uint8_t armAngle, uint8_t spinAngle)
     port.write(checksum);
 }
 
+void sendArmCommand(HardwareSerial &port, uint8_t code){
+    ArmCodeCommand cmd;
+    cmd.code = code;
+
+    uint8_t payloadBytes[sizeof(ArmCodeCommand)];
+    memcpy(payloadBytes, &cmd, sizeof(ArmCodeCommand));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(ArmCodeCommand));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)CMD_ARM_CODE);
+    port.write((uint8_t)sizeof(ArmCodeCommand));
+    port.write(payloadBytes, sizeof(ArmCodeCommand));
+    port.write(checksum);
+}
+
 void sendRelayCommand(HardwareSerial &port, uint8_t relayNumber, uint8_t status){
     if (relayNumber < 1 || relayNumber > 4){
         return;
