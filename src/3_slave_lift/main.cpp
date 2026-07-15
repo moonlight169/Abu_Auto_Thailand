@@ -57,13 +57,13 @@ void loop() {
         liftReceiver.hasNewZeroCommand = false;
     }
 
-    if (millis() - lastLogTime >= 1000 / LOOP_HZ){
-        if (!liftAll.isBusy() && !testLiftSent){
-            liftAll.liftToMM(0, 0);
-            testLiftSent = true;
-        }
-        liftAll.CountDebug();
-        liftAll.PWMDebug();
-        lastLogTime = millis();
-    }
+    // if (millis() - lastLogTime >= 1000 / LOOP_HZ){
+    //     if (!liftAll.isBusy() && !testLiftSent){
+    //         liftAll.liftToMM(0, 0);
+    //         testLiftSent = true;
+    //     }
+    //     liftAll.CountDebug();
+    //     liftAll.PWMDebug();
+    //     lastLogTime = millis();
+    // }
 }
