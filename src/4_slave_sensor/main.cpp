@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#include "config_sensor.h"
+#include "config/config_sensor.h"
 #include "protocol.h"
 
 Servo armServo;

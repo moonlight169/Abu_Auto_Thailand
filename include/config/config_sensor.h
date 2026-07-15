@@ -8,9 +8,3 @@
 #define arm_servo_pin PB4
 //spin
 #define spin_servo_pin PB5
-
-#define Light_sensor_1 PB6
-#define Light_sensor_2 PB7
-
-//Active LOW
-#define L_SW_frontrobot_6 PB1

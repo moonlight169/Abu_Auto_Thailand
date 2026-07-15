@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "protocol.h"
 #include "TFminiS.h"
-#include "config_laser.h"
 
 TFminiS tofFront(Serial6);
 

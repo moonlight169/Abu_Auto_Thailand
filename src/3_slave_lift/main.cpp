@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "config_lift.h"
+#include "config/config_lift.h"
 #include "lift.h"
 
 #define LOOP_HZ 50                        

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "motor.h"
-#include "config_wheels.h"
+#include "config/config_wheels.h"
 
 Motor::Motor(int pinA, int pinB){
     this->_pinA = pinA;

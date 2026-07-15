@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "config_wheels.h"
+#include "config/config_wheels.h"
 #include "wheel.h"
 #include "mecanum_kinematics.h"
 #include "move_base.h"

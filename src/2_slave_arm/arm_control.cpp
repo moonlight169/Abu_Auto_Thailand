@@ -1,5 +1,5 @@
 #include "arm_control.h"
-#include "config_arm.h"
+#include "config/config_arm.h"
 #include "motor.h"
 #include "encoder.h"
 #include <PID.h>
