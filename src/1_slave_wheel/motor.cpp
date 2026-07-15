@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "motor.h"
-#include "config/config_wheels.h"
 
 Motor::Motor(int pinA, int pinB){
     this->_pinA = pinA;
@@ -12,6 +11,7 @@ Motor::Motor(int pinA, int pinB){
     pinMode(pinA, OUTPUT);
     pinMode(pinB, OUTPUT);
 
+    this->_speed = 0;
     this->_targetSpeed = 0;
     this->_lastStepMillis = 0;
 }
@@ -45,24 +45,29 @@ void Motor::run(){
     }
 }
 
-void Motor::smoothRun(int targetSpeed) {
-    this->_targetSpeed = constrain(targetSpeed, -255, 255);
+void Motor::smoothRun(int targetSpeed){
+    // Simple acceleration ramp: move speed toward target by max step of 10 per call
+    if (targetSpeed > this->_speed){
+        this->_speed = min(this->_speed + 10, targetSpeed);
+    } else if (targetSpeed < this->_speed){
+        this->_speed = max(this->_speed - 10, targetSpeed);
+    }
+    this->run();
 }
 
-void Motor::update() {
-    unsigned long now = millis();
-
-    if (this->_speed < this->_targetSpeed) {
-        if (now - this->_lastStepMillis >= stepDelay) {
-            this->_speed++;
-            this->run();
-            this->_lastStepMillis = now;
-        }
-    } else if (this->_speed > this->_targetSpeed) {
-        if (now - this->_lastStepMillis >= stepDelay) {
-            this->_speed--;
-            this->run();
-            this->_lastStepMillis = now;
-        }
+void Motor::update(){
+    // Gradually move current speed toward target speed
+    if (this->_targetSpeed > this->_speed){
+        this->_speed = min(this->_speed + 10, this->_targetSpeed);
+    } else if (this->_targetSpeed < this->_speed){
+        this->_speed = max(this->_speed - 10, this->_targetSpeed);
     }
+    this->run();
+}
+
+void Motor::lock() {
+    this->_speed = 0;
+    this->_targetSpeed = 0;  
+    analogWrite(this->_pinA, 255);
+    analogWrite(this->_pinB, 255); 
 }
