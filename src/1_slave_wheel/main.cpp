@@ -13,7 +13,7 @@ extern Wheel wheelRR;
 
 WheelReceiver wheelReceiver;
 
-Kinematics kinematics(Kinematics::MECANUM, MAX_RPM, WHEEL_DIAMETER, FR_WHEELS_DISTANCE, LR_WHEELS_DISTANCE);
+Kinematics kinematics(Kinematics::MECANUM, MAX_RPM, WHEEL_RADIUS, FR_WHEELS_DISTANCE, LR_WHEELS_DISTANCE);
 
 PID MotorFL_Pid(PWM_MIN, PWM_MAX, FL_K_P, FL_K_I, FL_K_D);
 PID MotorFR_Pid(PWM_MIN, PWM_MAX, FR_K_P, FR_K_I, FR_K_D);

@@ -44,7 +44,7 @@ void loop() {
   unsigned long now = millis();
 
   if (now - lastSendTime >= (1000 / WHEEL_SEND_HZ)){
-    sendWheelCommand(Serial1, 0.000f, 0.000f, 0.000f);
+    sendWheelCommand(Serial1, 0.300f, 0.000f, 0.000f);
     lastSendTime = now;
   }
 
@@ -55,7 +55,8 @@ void loop() {
   }
 
   if (now - lastServoSendTime >= (1000 / SERVO_SEND_HZ)){
-    sendServoCommand(Serial8, 65, 0);
+    // sendServoCommand(Serial8, 65, 0);
+    sendServoCommand(Serial8, 0, 0);
     lastServoSendTime = now;
   }
 

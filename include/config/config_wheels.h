@@ -36,18 +36,18 @@
 
 #define stepDelay 10
 
-#define FL_K_P 0.65
-#define FL_K_I 0.0
-#define FL_K_D 0.01
+#define FL_K_P 1.0
+#define FL_K_I 0.05
+#define FL_K_D 0.005
 
-#define FR_K_P 0.65
-#define FR_K_I 0.0
-#define FR_K_D 0.01
+#define FR_K_P 1.0
+#define FR_K_I 0.05
+#define FR_K_D 0.005
 
-#define RL_K_P 0.65
-#define RL_K_I 0.0
-#define RL_K_D 0.01
+#define RL_K_P 1.0
+#define RL_K_I 0.05
+#define RL_K_D 0.005
 
-#define RR_K_P 0.65
-#define RR_K_I 0.0
-#define RR_K_D 0.01
+#define RR_K_P 1.0
+#define RR_K_I 0.05
+#define RR_K_D 0.005
