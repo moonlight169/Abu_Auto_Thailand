@@ -39,8 +39,9 @@ PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_
 │   ├── 3_slave_lift/       # STM32: คุมชุดยก (Front/Back) + Limit Switch 4 ตัว (top/bottom x2)
 │   ├── 4_slave_sensor/     # STM32: คุม Relay 4 ตัว + Servo 2 ตัว (บอร์ดนี้เป็น Sender ฝั่ง Servo/Relay)
 │   └── 5_slave_laser/      # STM32: อ่าน Laser Check Field 5 ตัว + Limit Switch 1 ตัว (frontRobot) + Light 2 ตัว (บอร์ดนี้เป็น Reader)
+│   └── Manual/              # ชุดเฟิร์มแวร์แยกต่างหากสำหรับควบคุมมือ (ไม่ใช่ 0-5 ด้านบน ดูหัวข้อ Manual Control Mode)
 ├── include/                # Header (.h) รวมทุก Environment + include/config/ เก็บไฟล์พิน/ค่าคงที่ต่อบอร์ด
-└── lib/                    # Library ใช้ร่วมกันทุก Environment: Kinematics (Mecanum) และ PID
+└── lib/                    # Library ใช้ร่วมกันทุก Environment: Kinematics (Mecanum), PID, PS4-esp32-master (Bluetooth PS4 controller)
 ```
 
 > โฟลเดอร์ `backup_slave_lift/`, `backup_slave_sensor/`, `backup_slave_wheels/` ที่ root เป็นโค้ดต้นแบบเก่าก่อนแยก `build_src_filter` — ไม่อยู่ใน `platformio.ini` และไม่ถูก build เก็บไว้อ้างอิงเท่านั้น
@@ -56,6 +57,20 @@ PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_
 | 5_slave_laser   | PA9(TX)/PA10(RX)   | 34(RX8)/35(TX8) — Serial8 |
 
 > ⚠️ **ตอนนี้โค้ดจริงใน `src/0_master/main.cpp` ไม่ตรงตารางนี้:** ส่งคำสั่ง Servo/Relay ให้ `4_slave_sensor` ผ่าน `Serial8` (ไม่ใช่ `Serial4`) และ `src/0_master/laser_sensors.cpp` ก็อ่านข้อมูล Laser/Lsw/Light จาก `Serial8` เหมือนกัน — เท่ากับ `Serial8` ถูกใช้ซ้อนกันทั้งส่งหาสายสอง (sensor) และรับจากสายห้า (laser) ส่วน `Serial4` เปิดไว้เฉยๆ ไม่มีจุดไหนอ่าน/เขียนจริง ต้องแก้ให้ตรงกับตารางออกแบบก่อนต่อสายจริงกับ `4_slave_sensor`/`5_slave_laser` พร้อมกัน
+
+## 🎮 Manual Control Mode (`Manual_esp32` / `Manual_teensy`)
+
+นอกจาก 6 Environment ของระบบออโต้หลัก มี **2 Environment แยกต่างหาก** สำหรับควบคุมมือด้วยจอย PS4 ผ่าน Bluetooth (ไม่ผูกกับ `0_master`, build/upload แยกอิสระ):
+
+```
+PS4 Controller ---Bluetooth--->  ESP32 (Manual_esp32)  ---UART Serial2--->  Teensy 4.1 (Manual_teensy)  ---UART Serial1(TX1)--->  1_slave_wheel
+```
+
+- **`Manual_esp32`** (`src/Manual/esp32.cpp`, บอร์ด ESP32 DevKit): รับสัญญาณจอย PS4 ผ่าน Bluetooth ด้วย lib `PS4-esp32-master` (MAC ของจอยที่ผูกไว้ในโค้ด: `c0:cd:d6:8d:0a:64` — ต้องตรงกับจอยจริงถึงจะเชื่อมต่อได้) แปลง Stick ซ้าย/ขวา (มี Deadzone กันสัญญาณเพี้ยน) เป็น `vx, vy, omega` แล้วห่อเฟรมโปรโตคอลเดียวกับ `WheelCommand` (`START | LEN | PAYLOAD | CHECKSUM`) ส่งออก `Serial2` ที่ 50Hz หากจอยหลุดการเชื่อมต่อจะส่งค่า 0 แทนทันที (failsafe ฝั่งส่ง)
+- **`Manual_teensy`** (`src/Manual/teensy.cpp` + `src/Manual/protocol.cpp`, บอร์ด Teensy 4.1 — build_src_filter คนละชุดกับ `0_master`): รับเฟรมจาก ESP32 ที่ `Serial5` (พิน 21 RX5) ด้วย state machine ในตัว (คนละชุดกับ `wheelReceiverFeed()` ใน `protocol.cpp` หลัก) แล้ว relay ต่อออก `Serial1` (พิน 1 TX1 — พินเดียวกับที่ `0_master` ใช้คุย `1_slave_wheel`) ด้วย `sendWheelCommand()` ที่ 50Hz มี failsafe ของตัวเอง: ถ้าไม่มีเฟรมใหม่เกิน 300ms (`MANUAL_CMD_TIMEOUT_MS`) จะส่งความเร็ว 0 แทน พิมพ์สถานะ vx/vy/omega ออก USB Serial ทุก 50ms เพื่อ debug
+- **`src/Manual/protocol.cpp` เป็นไฟล์คนละชุดกับ `include/protocol.h` implementation หลัก** — เป็นก็อปปี้จากฝั่งบอร์ด laser (มี `laserLinkReceiverFeed`, `sendServoCommand`, `sendArmCommand`, `sendRelayCommand`, `sendLiftCommand*` ติดมาด้วย) แต่ `Manual_teensy` ใช้จริงแค่ `sendWheelCommand()`/`calculateChecksum()` ฟังก์ชันอื่นที่เหลือไม่ถูกเรียกใช้ (dead code ที่ติดมากับไฟล์ ไม่ใช่บั๊ก)
+- ⚠️ **`Manual_teensy` เปิด `Serial2.begin()` ไว้ใน `setup()` แต่ไม่มีจุดไหนอ่าน/เขียนจริงในลูป** — ของที่ใช้งานจริงคือ `Serial5` (รับจาก ESP32) กับ `Serial1` (ส่งไป `1_slave_wheel`) เท่านั้น
+- โหมดนี้ relay ได้แค่คำสั่งล้อ (`vx/vy/omega`) เท่านั้น ยังไม่มีการควบคุมแขน/ยก/servo/relay ผ่านจอยมือ
 
 ## 📡 Communication Protocol
 
