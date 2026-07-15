@@ -40,7 +40,7 @@ LightData readLightCommand(){
     LightData result;
     for (uint8_t i = 0; i < lightPinCount; i++){
         result.header[i] = i;
-        result.data[i] = (uint8_t)analogRead(lightPins[i]);
+        result.data[i] = (uint8_t)digitalRead(lightPins[i]);
     }
     return result;
 }

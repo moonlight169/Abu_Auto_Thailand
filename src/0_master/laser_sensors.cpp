@@ -2,10 +2,9 @@
 
 static LaserLinkReceiver laserReceiver;
 
-// ดึงไบต์ที่มาจาก 5_slave_laser (Serial8) เข้ามาป้อน parser ให้ทันก่อนคืนค่าล่าสุด
 static void laserLinkPump(){
-    while (Serial8.available() > 0){
-        laserLinkReceiverFeed(laserReceiver, Serial8.read());
+    while (Serial4.available() > 0){
+        laserLinkReceiverFeed(laserReceiver, Serial4.read());
     }
 }
 
