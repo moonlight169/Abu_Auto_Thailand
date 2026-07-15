@@ -20,7 +20,7 @@ const int LIFT_PID_OUT_MAX = 255;
 const long LIFT_FRONT_PULSE_MIN = 0;
 const long LIFT_FRONT_PULSE_MAX = 4150;
 const long LIFT_BACK_PULSE_MIN = 0;
-const long LIFT_BACK_PULSE_MAX = 3600;
+const long LIFT_BACK_PULSE_MAX = 4200;
 
 //TODO: วัดระยะชักจริงจาก home ถึง top ของแต่ละฝั่ง (mm) ก่อนใช้ liftToMM()
 const float LIFT_STROKE_MM_FRONT = 400;
