@@ -11,13 +11,15 @@
 # Project Structure
 ระบบเป็น Distributed System เชื่อมต่อแบบ Star Topology ผ่านสาย UART (JST-XH 4 pin) แยกอิสระต่อบอร์ด (Point-to-Point)
 โดย Slave ทุกตัวจะต่อตรงเข้าหา Master โดยตรง (Slave 1-5 -> Master)
-ประกอบด้วย 6 โฟลเดอร์แยก Environment ชัดเจน:
-├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (มี HardwareSerial 5 ช่อง แยกคุยกับแต่ละ Slave) 
-├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง) 
-├── 2_slave_arm/    # STM32: คุมชุดแขน (Up/Down) up คือ หมุนคีบ down หมุนตัวคีบ Limit Switch 4 (fornt/back) ตัว 
-├── 3_slave_lift/   # STM32: คุมชุดยก (Front/back) Limit Switch 4 (up/down)
-├── 4_slave_sensor/ # STM32: คุม Relay 4 ตัว, Servo 2 ตัว, Limit Switch 1 ตัว (fontRobot) Light 2 ตัว TOF 1 ตัว (UART)
-└── 5_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว และ TOF 2 ตัว (UART)
+PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_src_filter` ใน platformio.ini (ไม่ได้แยกเป็นโฟลเดอร์ระดับบนสุดแบบ 6 โปรเจกต์อิสระ):
+├── src/
+│   ├── 0_master/       # Teensy 4.1: ศูนย์กลางสั่งการ (มี HardwareSerial 6 ช่อง แยกคุยกับแต่ละ Slave + TOF หน้า)
+│   ├── 1_slave_wheel/  # STM32: คุมล้อ Mecanum 4 ล้อ (ลูป PID ความถี่สูง)
+│   ├── 2_slave_arm/    # STM32: คุมชุดแขน (Up/Down) up คือ หมุนคีบ down หมุนตัวคีบ Limit Switch 4 (front/back) ตัว
+│   ├── 3_slave_lift/   # STM32: คุมชุดยก (Front/back) Limit Switch 4 (up/down)
+│   ├── 4_slave_sensor/ # STM32: คุม Relay 4 ตัว, Servo 2 ตัว, Limit Switch 1 ตัว (fontRobot) Light 2 ตัว TOF 1 ตัว (UART)
+│   └── 5_slave_laser/  # STM32: อ่าน Laser Check Field 5 ตัว และ TOF 2 ตัว (UART) — ยังเป็นเทมเพลตเปล่า
+└── include/            # Header ไฟล์ .h รวมทุก Environment ไว้โฟลเดอร์เดียว (ไม่ได้แยกโฟลเดอร์ต่อ Slave)
 
 # UART Pin Mapping
  1. 1_slave_wheel  PA9(TX) PA10(RX) -> 0_master 0(RX1) 1(TX1)
