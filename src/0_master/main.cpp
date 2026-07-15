@@ -23,6 +23,9 @@ const unsigned long ARM_SEND_INTERVAL_MS = 50;
 unsigned long lastLaserReadTime = 0;
 const unsigned long LASER_READ_INTERVAL_MS = 500;
 
+unsigned long lastLiftSendTime = 0;
+const unsigned long LIFT_SEND_INTERVAL_MS = 500;
+
 void setup() {
   //monitor
   Serial.begin(115200);
@@ -69,6 +72,11 @@ void loop() {
     sendRelayCommand(Serial4, 4, HIGH);
 
     lastRelaySendTime = now;
+  }
+
+  if (now - lastLiftSendTime >= LIFT_SEND_INTERVAL_MS){
+    sendLiftCommandMM(Serial7, 0, 0);
+    lastLiftSendTime = now;
   }
 
   // 5_slave_laser เป็นบอร์ด Reader: ส่งข้อมูลเข้ามาเองทุก 50ms ทาง Serial8

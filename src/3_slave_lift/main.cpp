@@ -1,12 +1,15 @@
 #include <Arduino.h>
 #include "config/config_lift.h"
 #include "lift.h"
+#include "protocol.h"
 
-#define LOOP_HZ 50                        
+#define LOOP_HZ 50
 
 Lift liftAll(lift_frontA, lift_frontB, lift_backA, lift_backB,
           enc_lift_frontA, enc_lift_frontB, enc_lift_backA, enc_lift_backB,
           L_SW_lift_fronttop_1, L_SW_lift_frontbottom_3, L_SW_lift_backtop_5, L_SW_lift_backbottom_7);
+
+LiftReceiver liftReceiver;
 
 void isrEncFrontA() { liftAll.handleFrontA(); }
 void isrEncFrontB() { liftAll.handleFrontB(); }
@@ -18,6 +21,7 @@ bool testLiftSent = false;
 
 void setup(){
     Serial.begin(115200);
+    Serial1.begin(115200);
 
     attachInterrupt(digitalPinToInterrupt(enc_lift_frontA), isrEncFrontA, CHANGE);
     attachInterrupt(digitalPinToInterrupt(enc_lift_frontB), isrEncFrontB, CHANGE);
@@ -30,9 +34,32 @@ void setup(){
 void loop() {
     liftAll.update();
 
+    // ===== รับคำสั่งจาก master (Serial1) =====
+    while (Serial1.available() > 0){
+        uint8_t incomingByte = Serial1.read();
+        liftReceiverFeed(liftReceiver, incomingByte);
+    }
+
+    if (liftReceiver.hasNewPulseCommand){
+        LiftPulseCommand &cmd = liftReceiver.lastPulseCommand;
+        liftAll.liftTo(cmd.pulseFront, cmd.pulseBack);
+        liftReceiver.hasNewPulseCommand = false;
+    }
+
+    if (liftReceiver.hasNewMMCommand){
+        LiftMMCommand &cmd = liftReceiver.lastMMCommand;
+        liftAll.liftToMM(cmd.mmFront, cmd.mmBack);
+        liftReceiver.hasNewMMCommand = false;
+    }
+
+    if (liftReceiver.hasNewZeroCommand){
+        liftAll.setZero();
+        liftReceiver.hasNewZeroCommand = false;
+    }
+
     if (millis() - lastLogTime >= 1000 / LOOP_HZ){
         if (!liftAll.isBusy() && !testLiftSent){
-            liftAll.liftToMM(200, 200);
+            liftAll.liftToMM(0, 0);
             testLiftSent = true;
         }
         liftAll.CountDebug();

@@ -11,6 +11,7 @@
 #define ARM_CMD_LEN sizeof(ArmCommand)
 #define ARM_FB_LEN sizeof(ArmFeedback)
 #define LASER_LINK_BUFFER_SIZE sizeof(LaserData)  // LaserData(10B) เป็น payload ที่ใหญ่ที่สุดในกลุ่ม Laser/Lsw/Light
+#define LIFT_LINK_BUFFER_SIZE (sizeof(LiftPulseCommand) > sizeof(LiftMMCommand) ? sizeof(LiftPulseCommand) : sizeof(LiftMMCommand))
 
 #define CMD_SERVO 0x01
 #define CMD_RELAY 0x02
@@ -20,6 +21,9 @@
 #define CMD_LASER 0x06
 #define CMD_LSW   0x07
 #define CMD_LIGHT 0x08
+#define CMD_LIFT_PULSE 0x09
+#define CMD_LIFT_MM    0x0A
+#define CMD_LIFT_ZERO  0x0B
 
 struct WheelCommand{
     float vx;
@@ -67,6 +71,20 @@ struct LswData{
 struct LightData{
     uint8_t header[2];
     uint8_t data[2];    // ผลอ่าน analogRead (ตั้ง analogReadResolution(8) ไว้ที่ 0-255)
+};
+
+struct LiftPulseCommand{
+    long pulseFront;   // ตรงกับ Lift::liftTo(long pulseFront, long pulseBack)
+    long pulseBack;
+};
+
+struct LiftMMCommand{
+    float mmFront;      // ตรงกับ Lift::liftToMM(float mmFront, float mmBack)
+    float mmBack;
+};
+
+struct LiftZeroCommand{
+    uint8_t trigger;    // ไม่มีพารามิเตอร์จริง (Lift::setZero() ไม่รับ arg) ใส่ไว้ให้ payload len > 0 เพื่อผ่าน framing เท่านั้น
 };
 
 struct WheelFrame{
@@ -158,6 +176,24 @@ struct LaserLinkReceiver{
     unsigned long lastReceivedTime = 0;
 };
 
+struct LiftReceiver{
+    ParserState state = WAIT_START;
+    uint8_t cmdId = 0;
+    uint8_t buffer[LIFT_LINK_BUFFER_SIZE];
+    uint8_t bufferIndex = 0;
+    uint8_t expectedLen = 0;
+
+    LiftPulseCommand lastPulseCommand;
+    bool hasNewPulseCommand = false;
+
+    LiftMMCommand lastMMCommand;
+    bool hasNewMMCommand = false;
+
+    bool hasNewZeroCommand = false;
+
+    unsigned long lastReceivedTime = 0;
+};
+
 uint8_t calculateChecksum(const uint8_t* data, uint8_t len);
 void wheelReceiverFeed(WheelReceiver &receiver, uint8_t incomingByte);
 void sendWheelCommand(HardwareSerial &port, float vx, float vy, float omega);
@@ -177,5 +213,11 @@ void sendLswData(HardwareSerial &port, const LswData &lsw);
 void sendLightData(HardwareSerial &port, const LightData &light);
 
 void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte);
+
+void sendLiftCommandPulse(HardwareSerial &port, long pulseFront, long pulseBack);
+void sendLiftCommandMM(HardwareSerial &port, float mmFront, float mmBack);
+void sendLiftCommandZero(HardwareSerial &port);
+
+void liftReceiverFeed(LiftReceiver &receiver, uint8_t incomingByte);
 
 #endif

@@ -142,3 +142,53 @@ void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte){
         }
     }
 }
+
+void sendLiftCommandPulse(HardwareSerial &port, long pulseFront, long pulseBack){
+    LiftPulseCommand cmd;
+    cmd.pulseFront = pulseFront;
+    cmd.pulseBack = pulseBack;
+
+    uint8_t payloadBytes[sizeof(LiftPulseCommand)];
+    memcpy(payloadBytes, &cmd, sizeof(LiftPulseCommand));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(LiftPulseCommand));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)CMD_LIFT_PULSE);
+    port.write((uint8_t)sizeof(LiftPulseCommand));
+    port.write(payloadBytes, sizeof(LiftPulseCommand));
+    port.write(checksum);
+}
+
+void sendLiftCommandMM(HardwareSerial &port, float mmFront, float mmBack){
+    LiftMMCommand cmd;
+    cmd.mmFront = mmFront;
+    cmd.mmBack = mmBack;
+
+    uint8_t payloadBytes[sizeof(LiftMMCommand)];
+    memcpy(payloadBytes, &cmd, sizeof(LiftMMCommand));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(LiftMMCommand));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)CMD_LIFT_MM);
+    port.write((uint8_t)sizeof(LiftMMCommand));
+    port.write(payloadBytes, sizeof(LiftMMCommand));
+    port.write(checksum);
+}
+
+void sendLiftCommandZero(HardwareSerial &port){
+    LiftZeroCommand cmd;
+    cmd.trigger = 1;
+
+    uint8_t payloadBytes[sizeof(LiftZeroCommand)];
+    memcpy(payloadBytes, &cmd, sizeof(LiftZeroCommand));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(LiftZeroCommand));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)CMD_LIFT_ZERO);
+    port.write((uint8_t)sizeof(LiftZeroCommand));
+    port.write(payloadBytes, sizeof(LiftZeroCommand));
+    port.write(checksum);
+}
