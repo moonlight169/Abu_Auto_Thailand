@@ -9,12 +9,21 @@ static const int lightPins[2] = {
     Light_sensor_1, Light_sensor_2
 };
 
+static const int buttonPins[4] = {
+    Green_Button, Bule_Button, Red_Button, Yellow_Button
+};
+
 static const uint8_t laserPinCount = sizeof(laserPins) / sizeof(laserPins[0]);
 static const uint8_t lightPinCount = sizeof(lightPins) / sizeof(lightPins[0]);
+static const uint8_t buttonPinCount = sizeof(buttonPins) / sizeof(buttonPins[0]);
 
 void laserSensorsInit(){
     for (uint8_t i = 0; i < laserPinCount; i++){
         pinMode(laserPins[i], INPUT_PULLUP);
+    }
+
+    for (uint8_t i = 0; i < buttonPinCount; i++){
+        pinMode(buttonPins[i], INPUT_PULLUP);
     }
 
     pinMode(L_SW_frontrobot_6, INPUT_PULLUP);
@@ -41,6 +50,15 @@ LightData readLightCommand(){
     for (uint8_t i = 0; i < lightPinCount; i++){
         result.header[i] = i;
         result.data[i] = (uint8_t)digitalRead(lightPins[i]);
+    }
+    return result;
+}
+
+ButtonData readButtonCommand(){
+    ButtonData result;
+    for (uint8_t i = 0; i < buttonPinCount; i++){
+        result.header[i] = i;
+        result.data[i] = (uint8_t)digitalRead(buttonPins[i]);
     }
     return result;
 }

@@ -47,3 +47,16 @@ void sendLightData(HardwareSerial &port, const LightData &light){
     port.write(payloadBytes, sizeof(LightData));
     port.write(checksum);
 }
+
+void sendButtonData(HardwareSerial &port, const ButtonData &button){
+    uint8_t payloadBytes[sizeof(ButtonData)];
+    memcpy(payloadBytes, &button, sizeof(ButtonData));
+
+    uint8_t checksum = calculateChecksum(payloadBytes, sizeof(ButtonData));
+
+    port.write(PROTOCOL_START_BYTE);
+    port.write((uint8_t)CMD_BUTTON);
+    port.write((uint8_t)sizeof(ButtonData));
+    port.write(payloadBytes, sizeof(ButtonData));
+    port.write(checksum);
+}

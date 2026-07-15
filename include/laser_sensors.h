@@ -9,5 +9,6 @@ void laserSensorsInit();
 LaserData readLaserCommand();
 LswData readLswCommand();
 LightData readLightCommand();
+ButtonData readButtonCommand();
 
 #endif

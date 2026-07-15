@@ -26,3 +26,8 @@ LightData readLightCommand(){
     laserLinkPump();
     return laserReceiver.lastLight;
 }
+
+ButtonData readButtonCommand(){
+    laserLinkPump();
+    return laserReceiver.lastButton;
+}

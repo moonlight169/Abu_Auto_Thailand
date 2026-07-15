@@ -13,3 +13,8 @@
 #define Laser_3 PB14
 #define Laser_4 PB15
 #define Laser_5 PB4
+
+#define Green_Button PA2
+#define Bule_Button PA3
+#define Red_Button PA7
+#define Yellow_Button PA6

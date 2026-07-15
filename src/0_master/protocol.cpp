@@ -135,6 +135,10 @@ void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte){
                     memcpy(&receiver.lastLight, receiver.buffer, sizeof(LightData));
                     receiver.hasNewLight = true;
                     receiver.lastReceivedTime = millis();
+                } else if (receiver.cmdId == CMD_BUTTON && receiver.expectedLen == sizeof(ButtonData)){
+                    memcpy(&receiver.lastButton, receiver.buffer, sizeof(ButtonData));
+                    receiver.hasNewButton = true;
+                    receiver.lastReceivedTime = millis();
                 }
             }
             receiver.state = WAIT_START;

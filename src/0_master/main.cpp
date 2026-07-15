@@ -83,6 +83,7 @@ void loop() {
     LaserData laser = readLaserCommand();
     LswData lsw = readLswCommand();
     LightData light = readLightCommand();
+    ButtonData button = readButtonCommand();
 
     Serial.print("Laser: ");
     for (uint8_t i = 0; i < sizeof(laser.data); i++){
@@ -96,6 +97,12 @@ void loop() {
     Serial.print(" Light: ");
     for (uint8_t i = 0; i < sizeof(light.data); i++){
       Serial.print(light.data[i]);
+      Serial.print(' ');
+    }
+
+    Serial.print(" Button: ");
+    for (uint8_t i = 0; i < sizeof(button.data); i++){
+      Serial.print(button.data[i]);
       Serial.print(' ');
     }
     Serial.println();

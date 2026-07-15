@@ -3,7 +3,7 @@
 #include "laser_sensors.h"
 
 unsigned long lastSendTime = 0;
-const unsigned long SEND_INTERVAL_MS = 50;
+const unsigned long SEND_INTERVAL_MS = 5;
 
 unsigned long lastLogTime = 0;
 const unsigned long LOG_INTERVAL_MS = 500;
@@ -23,6 +23,7 @@ void loop(){
     LaserData laser = readLaserCommand();
     LswData lsw = readLswCommand();
     LightData light = readLightCommand();
+    ButtonData button = readButtonCommand();
 
     // ===== 2. ส่งค่าล่าสุดกลับ master เป็นช่วงๆ =====
     if (millis() - lastSendTime >= SEND_INTERVAL_MS){
@@ -31,6 +32,7 @@ void loop(){
         sendLaserData(Serial1, laser);
         sendLswData(Serial1, lsw);
         sendLightData(Serial1, light);
+        sendButtonData(Serial1, button);
     }
 
     // ===== 3. Debug ผ่าน USB Serial =====
@@ -49,6 +51,12 @@ void loop(){
         Serial.print(F(" Light: "));
         for (uint8_t i = 0; i < sizeof(light.data); i++){
             Serial.print(light.data[i]);
+            Serial.print(' ');
+        }
+
+        Serial.print(F(" Button: "));
+        for (uint8_t i = 0; i < sizeof(button.data); i++){
+            Serial.print(button.data[i]);
             Serial.print(' ');
         }
         Serial.println();

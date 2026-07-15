@@ -24,6 +24,7 @@
 #define CMD_LIFT_PULSE 0x09
 #define CMD_LIFT_MM    0x0A
 #define CMD_LIFT_ZERO  0x0B
+#define CMD_BUTTON     0x0C
 
 struct WheelCommand{
     float vx;
@@ -71,6 +72,11 @@ struct LswData{
 struct LightData{
     uint8_t header[2];
     uint8_t data[2];    // ผลอ่าน analogRead (ตั้ง analogReadResolution(8) ไว้ที่ 0-255)
+};
+
+struct ButtonData{
+    uint8_t header[4];  // ลำดับปุ่ม 0=Green,1=Blue,2=Red,3=Yellow
+    uint8_t data[4];    // ผลอ่าน digitalRead ต่อปุ่ม (0/1, Active LOW)
 };
 
 struct LiftPulseCommand{
@@ -173,6 +179,9 @@ struct LaserLinkReceiver{
     LightData lastLight;
     bool hasNewLight = false;
 
+    ButtonData lastButton;
+    bool hasNewButton = false;
+
     unsigned long lastReceivedTime = 0;
 };
 
@@ -211,6 +220,7 @@ void sendArmFeedback(HardwareSerial &port, uint8_t bottomAngle, uint8_t topAngle
 void sendLaserData(HardwareSerial &port, const LaserData &laser);
 void sendLswData(HardwareSerial &port, const LswData &lsw);
 void sendLightData(HardwareSerial &port, const LightData &light);
+void sendButtonData(HardwareSerial &port, const ButtonData &button);
 
 void laserLinkReceiverFeed(LaserLinkReceiver &receiver, uint8_t incomingByte);
 
