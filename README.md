@@ -148,21 +148,6 @@ i                สถานะ I/O ของ hub
 r / z            reset yaw ของ gyro / zero odometry
 ```
 
-## ⚠️ สิ่งที่ต้องรู้ก่อนใช้งานจริง
-
-- **เฟิร์มแวร์บอร์ด lift ไม่ได้อยู่ในรีโปนี้** master พูดโปรโตคอล `LP` / `LZ` ออก
-  `Serial7` แต่โค้ดฝั่งบอร์ด lift ต้องไปหาจากที่อื่น
-- `HUB_ARM_MAX_DEG` / `HUB_SPIN_MAX_DEG` ใน `include/master/config.h` ต้องตรงกับ
-  `ARM_MAX_DEG` / `SPIN_MAX_DEG` ใน `include/slave_hub/config.h` ไม่งั้นคำสั่งจะถูก
-  clamp เงียบ ๆ ตั้งแต่ฝั่ง master
-- บิต LDR1 / LDR2 ใน `include/master/types.h` สลับกับลำดับที่ hub ส่งจริงใน
-  `src/slave_hub/io_board.cpp` (คอมเมนต์ระบุว่า verify กับบอร์ดจริงแล้ว) ถ้าเปลี่ยนสาย
-  เมื่อไหร่ต้องเช็กสองไฟล์นี้พร้อมกัน
-- ถ้าแขน (`slave_arm`) ค้างอยู่ตำแหน่งเป้าหมายนานเกิน `MOVE_TIMEOUT_MS` (50 วิ) แล้ว
-  โดนดันจนคลาดเกิน release band จะเข้า FAULT ทันที ต้องส่ง `CLEAR` ก่อนใช้งานต่อ
-- step `TF34_EDGE` และ high-align ส่งแพ็กเก็ต `T,` ทุกรอบ loop โดยไม่คุมคาบ ทำให้ลูป
-  ถูกจำกัดด้วยความเร็ว UART ระหว่างอยู่ใน step นั้น
-
 ## 📄 License
 
 MIT License — ดูรายละเอียดใน [LICENSE](LICENSE)
