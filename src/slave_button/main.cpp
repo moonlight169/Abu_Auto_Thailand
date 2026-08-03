@@ -34,6 +34,8 @@ void setup() {
     delay(200);
     Serial.println(F("=== F103 Keypad Echo ==="));
     Serial.println(F("Press key -> show A1-A8/B1-B8 on OLED -> send text to Teensy"));
+    Serial.println(F("Each press sends the label 5x, 20 ms apart, on Serial1."));
+    Serial.println(F("This board takes no console commands; it only reports keys."));
 }
 
 // ===== Repeat-send state =====

@@ -35,8 +35,13 @@ void printHelp()
   Serial.println("100d : move right 100 RPM");
   Serial.println("s    : stop");
   Serial.println("v    : print wheel status");
-  Serial.println("z    : zero all encoders");
+  Serial.println("z    : zero all encoders (breaks Master odometry)");
   Serial.println("h    : help");
+  Serial.println("No Enter needed: digits buffer, a letter runs at once.");
+  Serial.println("Any letter drops Master control until its next T packet.");
+  Serial.println("Number is wheel RPM, maximum 420 RPM.");
+  Serial.println("From Master on Serial1: T,FL,FR,RL,RR | S | Q");
+  Serial.println("No T packet for 500 ms -> stop and E,TIMEOUT_STOP");
 }
 
 static void executeSimpleCommand(char command)

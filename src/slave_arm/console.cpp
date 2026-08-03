@@ -15,18 +15,20 @@ void initializeConsole() {
 void printHelp() {
   Serial.println();
   Serial.println(F("=== ABU 2026 ARM SERIAL TEST ==="));
-  Serial.println(F("HOME      : Bottom FRONT=0 -> Top FRONT=0 -> Top moves to 100 deg"));
-  Serial.println(F("B<number> : Bottom PID position, e.g. B90 or B45.5"));
-  Serial.println(F("T<number> : Top position in degrees, e.g. T90 or T45.5"));
-  Serial.println(F("BPWM n    : Test Bottom PWM -255..255 (-=FRONT, +=BACK)"));
-  Serial.println(F("TPWM n    : Test Top PWM -255..255 (+=FRONT, -=BACK)"));
-  Serial.println(F("LIMITS    : Read all four limits once (PRESSED/OPEN)"));
-  Serial.println(F("STREAM ON : Print limits continuously every 200 ms"));
-  Serial.println(F("STREAM OFF: Stop continuous limit display"));
-  Serial.println(F("STOP      : Stop both motors"));
-  Serial.println(F("STATUS    : Print encoder, position, limits, state"));
-  Serial.println(F("CLEAR     : Clear FAULT and return to IDLE"));
-  Serial.println(F("HELP      : Show this menu"));
+  Serial.println(F("HOME        : Bottom FRONT=0 -> Top FRONT=0 -> Top moves to 100 deg"));
+  Serial.println(F("B<number>   : Bottom PID position 0..180, e.g. B90 or B45.5"));
+  Serial.println(F("T<number>   : Top position 0..180 deg, e.g. T90 or T45.5"));
+  Serial.println(F("BPWM n      : Test Bottom PWM -255..255 (-=FRONT, +=BACK)"));
+  Serial.println(F("TPWM n      : Test Top PWM -255..255 (+=FRONT, -=BACK)"));
+  Serial.println(F("LIMITS or L : Read all four limits once (PRESSED/OPEN)"));
+  Serial.println(F("STREAM ON   : Print limits continuously every 200 ms"));
+  Serial.println(F("STREAM OFF  : Back to STATUS every 500 ms"));
+  Serial.println(F("STOP or X   : Stop both motors"));
+  Serial.println(F("STATUS or ? : Print encoder, position, limits, state"));
+  Serial.println(F("CLEAR       : Clear FAULT and return to IDLE"));
+  Serial.println(F("HELP        : Show this menu"));
+  Serial.println(F("No comma here: B90 means 90 deg, B,90 parses as 0 deg."));
+  Serial.println(F("The Master uses its own CSV parser: CMD,<seq>,B,90"));
   Serial.println();
 }
 

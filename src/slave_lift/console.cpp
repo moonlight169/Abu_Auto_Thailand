@@ -27,7 +27,17 @@ static bool parseTwoLongs(const char *text, long &first, long &second) {
 void printHelp() {
   Serial.println(F("STM32 LIFT POSITION PID + SOFT DOWN READY"));
   Serial.println(F("Teensy UART: Serial1 115200, TX=PA9, RX=PA10"));
+  Serial.println(F("The Master sends these same commands on Serial1."));
   Serial.println(F("LP,f,b | LZ/HOME | S | Z | POSE | LIMIT | PID"));
+
+  Serial.print(F("LP range: front 0.."));
+  Serial.print(FRONT_PULSE_MAX);
+  Serial.print(F(", back 0.."));
+  Serial.println(BACK_PULSE_MAX);
+
+  Serial.println(F("LZ homes on the bottom limits. Z zeroes where it stands,"));
+  Serial.println(F("so use LZ unless the columns are already down."));
+  Serial.println(F("Gains are integers x1000: 1300p means Kp=1.300"));
   Serial.println(F("PID: 1300p 1500i 0d"));
   Serial.println(F("Separate: 1300fp 1500fi 0fd | 1300bp 1500bi 0bd"));
 
