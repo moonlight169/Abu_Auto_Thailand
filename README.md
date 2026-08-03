@@ -15,7 +15,7 @@ by.Ittichai Wachiraphiphatkun
 slave_hub   (Teensy 4.1)  <--UART 460800--> |
 slave_wheel (Blackpill)   <--UART 115200--> | Master (Teensy 4.1)
 slave_arm   (Blackpill)   <--UART 115200--> |
-lift board  (STM32)       <--UART 115200--> |
+slave_lift  (Blackpill)   <--UART 115200--> |
                                             +--- I2C 400kHz --- BNO085 IMU
 ```
 
@@ -25,13 +25,13 @@ RPLiDAR และ TFMini-S ทั้ง 4 ตัวไม่ได้ต่อ�
 ## 🛠️ Hardware & Tech Stack
 
 - **Master / Sensor Hub:** Teensy 4.1 (ARM Cortex-M7) @ 600 MHz
-- **Wheel / Arm Controller:** STM32 Blackpill (F411CE)
+- **Wheel / Arm / Lift Controller:** STM32 Blackpill (F411CE)
 - **Development Environment:** VS Code + PlatformIO (Multi-Environment Setup)
 - **Control Algorithm:** PID Control, Mecanum Kinematics, LiDAR line fitting
 
 ## 📂 Project Structure
 
-PlatformIO ใช้ single project แยก 4 Environment ด้วย `build_src_filter` แต่ละ env
+PlatformIO ใช้ single project แยก 5 Environment ด้วย `build_src_filter` แต่ละ env
 คอมไพล์เฉพาะโฟลเดอร์ของตัวเองและมองเห็นเฉพาะ header ของตัวเอง (`-I include/<board>`)
 ทุกบอร์ดจึงมี `config.h` เป็นของตัวเองได้โดยไม่ชนกัน
 
@@ -40,10 +40,11 @@ PlatformIO ใช้ single project แยก 4 Environment ด้วย `build_
 │   ├── master/        # Teensy 4.1: mission runner, odometry, position control, ทุก link
 │   ├── slave_hub/     # Teensy 4.1: RPLiDAR + TFMini-S x4 + relay + servo + switch
 │   ├── slave_arm/     # Blackpill: แขน 2 แกน encoder PID + homing ด้วย limit switch
-│   └── slave_wheel/   # Blackpill: Mecanum 4 ล้อ speed PID
+│   ├── slave_wheel/   # Blackpill: Mecanum 4 ล้อ speed PID
+│   └── slave_lift/    # Blackpill: lift หน้า/หลัง position PID + soft down + homing
 ├── include/
-│   ├── master/  slave_hub/  slave_arm/  slave_wheel/   # header แยกต่อบอร์ด
-└── platformio.ini     # 4 environment
+│   ├── master/  slave_hub/  slave_arm/  slave_wheel/  slave_lift/  # header แยกต่อบอร์ด
+└── platformio.ini     # 5 environment
 ```
 
 ### ไฟล์ที่ต้องแก้บ่อย (ฝั่ง master)
@@ -59,6 +60,9 @@ PlatformIO ใช้ single project แยก 4 Environment ด้วย `build_
 ค่า threshold ของการตรวจจับ LiDAR (ความกว้างกล่อง, cluster gap, filter alpha) อยู่ฝั่ง hub
 ที่ `src/slave_hub/config.cpp` ไม่ใช่ฝั่ง master
 
+ส่วน gain / ระยะ stroke / ลิมิต PWM ขาลงของ lift อยู่ที่ `include/slave_lift/config.h`
+ฝั่ง master เก็บแค่ค่า pulse เป้าหมายกับ timeout ใน `include/master/config.h`
+
 ## 🔌 Serial / Pin Mapping
 
 ### Master (Teensy 4.1)
@@ -69,7 +73,7 @@ PlatformIO ใช้ single project แยก 4 Environment ด้วย `build_
 | `Serial1` | 460800 | slave_hub |
 | `Serial2` | 115200 | slave_wheel |
 | `Serial6` | 115200 | slave_arm (TX pin 24 / RX pin 25) |
-| `Serial7` | 115200 | บอร์ด lift |
+| `Serial7` | 115200 | slave_lift |
 | `Wire` | 400 kHz | BNO085 IMU (SDA 18 / SCL 19) |
 
 ### slave_hub (Teensy 4.1)
@@ -86,9 +90,9 @@ input ทั้งหมด `INPUT_PULLUP` และ LOW = ACTIVE —
 L_SW_Front 12, LDR1 13, LDR2 18, R_SW_Front 17, laser5 19,
 SW_Green 20, SW_Blue 21, SW_Red 22, SW_Yellow 23
 
-### slave_wheel / slave_arm (Blackpill F411CE)
+### slave_wheel / slave_arm / slave_lift (Blackpill F411CE)
 
-ทั้งสองบอร์ดคุยกับ Master ที่ `Serial1` = PA9 (TX) / PA10 (RX) และใช้ USB CDC
+ทั้งสามบอร์ดคุยกับ Master ที่ `Serial1` = PA9 (TX) / PA10 (RX) และใช้ USB CDC
 เป็น `Serial` สำหรับเมนูทดสอบไปพร้อมกัน
 
 | | FL / Bottom | FR | RL | RR / Top |
@@ -100,6 +104,18 @@ SW_Green 20, SW_Blue 21, SW_Red 22, SW_Yellow 23
 
 arm limit switch: BOTTOM front PB6 / back PB7, TOP front PB4 / back PB5
 
+lift เป็นคนละบอร์ดกับ arm แต่ผังขาใกล้กัน (ขามอเตอร์ A/B ของเสาหน้าสลับข้างกับ arm top):
+
+| | Front | Back |
+|---|---|---|
+| lift motor A/B | PB1 / PB0 | PA7 / PA6 |
+| lift encoder A/B | PB12 / PB13 | PB15 / PB14 |
+| lift limit TOP / BOTTOM | PB5 / PB4 | PB7 / PB6 |
+
+encoder ของ lift นับบวก = ขึ้น, PWM ลบ = ขึ้น / PWM บวก = ลง
+โดยขาลงจะถูกจำกัดที่ `*_DOWN_PWM_MAX` ค่อย ๆ ไต่ขึ้นทีละ `DOWN_ACCEL_STEP`
+และลดกำลังเป็นเส้นตรงในช่วง `DOWN_BRAKE_ZONE_PULSE` สุดท้ายก่อนถึงเป้าหมาย
+
 ## 📡 Protocol
 
 | Link | Master ส่ง | Slave ตอบ |
@@ -107,7 +123,7 @@ arm limit switch: BOTTOM front PB6 / back PB7, TOP front PB4 / back PB5
 | wheel | `T,<FL>,<FR>,<RL>,<RR>` / `S` / `Q` | `F,<ms>,<c x4>,<rpm x4>` ที่ 50 Hz |
 | hub | `R1 ON` `ARM 40` `SPIN 100` `MODE BOX` `MODE WALL` `STREAM ON` | `HUB,<ms>,<MODE>,<found>,<dist>,<offset>,<angle>,<width>,<points>,<inputMask>,<relayMask>,<arm>,<spin>,<tf1..tf4>,<tfValidMask>` ที่ 20 Hz |
 | arm | `CMD,<seq>,<HOME\|B,deg\|T,deg\|POS,b,t\|STATUS\|STOP\|CLEAR>` | `ACK` / `STATE` / `DONE` / `ERR` (ตอบพร้อม seq เดิม) |
-| lift | `LP,<front>,<back>` / `LZ` | `LIFT_POS` / `LIFT_BUSY` / `LIFT_REACHED` / `LIFT_HOME_REACHED` / `LIFT_ERROR` |
+| lift | `LP,<front>,<back>` / `LZ` / `S` | `LIFT_POS,<front>,<back>` ที่ 50 Hz + `LIFT_BUSY` / `LIFT_REACHED,<f>,<b>` / `LIFT_HOMING` / `LIFT_HOME_REACHED` / `LIFT_ERROR,<reason>` |
 
 ## ▶️ Build & Upload
 
@@ -118,6 +134,8 @@ pio run -e master -t upload    # อัปโหลด
 pio device monitor -e master   # เปิด serial monitor
 pio run -t clean               # ล้าง build
 ```
+
+ชื่อ env: `master` `slave_hub` `slave_arm` `slave_wheel` `slave_lift`
 
 Blackpill ตั้งค่าไว้อัปโหลดผ่าน **ST-Link** ถ้าจะแฟลชผ่าน USB (BOOT0/DFU)
 ให้สลับ `upload_protocol` ใน `platformio.ini` เป็น `dfu`
@@ -147,6 +165,20 @@ AH / AB 90       arm home / arm bottom 90 deg
 i                สถานะ I/O ของ hub
 r / z            reset yaw ของ gyro / zero odometry
 ```
+
+**คำสั่งบน Serial Monitor ของ slave_lift** (คำสั่งชุดเดียวกันนี้รับจาก Master ทาง `Serial1` ด้วย):
+
+```
+LP,3800,3900     สั่งตำแหน่ง front / back เป็น pulse (clamp 0..*_PULSE_MAX)
+LZ / HOME        homing ลงไปชน limit ล่างแล้ว zero encoder ทั้งสองเสา
+S / Z            หยุด / หยุดพร้อม zero encoder ทันที
+POSE / LIMIT     อ่านตำแหน่ง+PWM+ลิมิต / อ่านเฉพาะลิมิต
+PID              โชว์ gain ปัจจุบัน
+5300p 4000i 0d   ตั้ง gain ทั้งสองเสาพร้อมกัน (พิมพ์เป็นจำนวนเต็ม x1000 = 5.300)
+5300fp 2300bp    ตั้งแยกเสา front (f*) / back (b*)
+```
+
+บอร์ด lift พิมพ์ `POSE` อัตโนมัติทุก 500 ms และส่ง `LIFT_POS` ให้ Master ทุก 20 ms
 
 ## 📄 License
 
