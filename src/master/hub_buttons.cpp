@@ -55,13 +55,17 @@ static void onSwitchYellow()
   resetOdometry();
   resetGyroYaw();
 
+  setHubRelay(1, 0);
+  setHubRelay(2, 1);
+  setHubRelay(3, 1);
+
   setHubArm(5);
   setHubSpin(0);
   startLiftHome();
 
   startArmClearAndHome();
 
-  setHubRelay(4, true);
+  setHubRelay(4, 1);
   yellowRelay4PulseActive = true;
   yellowRelay4PulseStartMs = millis();
 }
@@ -73,7 +77,7 @@ static void updateYellowRelay4Pulse()
 
   if ((uint32_t)(millis() - yellowRelay4PulseStartMs) >= YELLOW_RELAY4_PULSE_MS)
   {
-    setHubRelay(4, false);
+    setHubRelay(4, 0);
     yellowRelay4PulseActive = false;
   }
 }
