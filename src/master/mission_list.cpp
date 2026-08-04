@@ -15,7 +15,7 @@
 
 // Add more mission programs by creating another MissionStep array and
 // registering it in missionPrograms[] below.
-const MissionStep mission1[] =
+const MissionStep exMission[] =
 {
   RESET_STEP(),
   LIFT_STEP(100, 200),
@@ -92,7 +92,7 @@ const MissionStep mission1[] =
   END_STEP()
 };
 
-const MissionStep mission2[] =
+const MissionStep mission1[] =
 {
   RESET_STEP(),
   HUB_ARM_STEP(5),
@@ -114,7 +114,7 @@ const MissionStep mission2[] =
   END_STEP()
 };
 
-const MissionStep mission3[] =
+const MissionStep mission2[] =
 {
   RESET_STEP(),
   HUB_ARM_STEP(5),
@@ -140,9 +140,9 @@ const MissionStep mission3[] =
 
 const MissionProgram missionPrograms[] =
 {
+  { "exMission", exMission, ARRAY_COUNT(exMission) },
   { "MISSION 1", mission1, ARRAY_COUNT(mission1) },
   { "MISSION 2", mission2, ARRAY_COUNT(mission2) },
-  { "MISSION 3", mission3, ARRAY_COUNT(mission3) },
 };
 
 const size_t MISSION_PROGRAM_COUNT = ARRAY_COUNT(missionPrograms);
