@@ -4,7 +4,8 @@
 //  Runs the mission sequencer, mecanum odometry and the world-frame position
 //  controller, and talks to every other board:
 //    Serial1 -> sensor hub      Serial2 -> wheel driver
-//    Serial6 -> arm slave       Serial7 -> lift controller
+//    Serial3 -> keypad panel    Serial6 -> arm slave
+//    Serial7 -> lift controller
 //
 //  ---------------------------------------------------------------------
 //   file                what to edit it for
@@ -18,6 +19,7 @@
 //   types.h             shared enums and structs
 //  ---------------------------------------------------------------------
 //   hub_link / wheel_link / lift_link / arm_link   one serial protocol each
+//   button_link         keypad codes: filter, vote, start by name
 //   kinematics / odometry / position_control       motion maths
 //   box_parking / high_align                       LiDAR routines
 //   gyro / hub_buttons / tasks / robot_state       supporting modules
@@ -32,6 +34,7 @@
 #include "arm_link.h"
 #include "box_parking.h"
 #include "box_result.h"
+#include "button_link.h"
 #include "config.h"
 #include "console.h"
 #include "gyro.h"
@@ -40,6 +43,7 @@
 #include "hub_link.h"
 #include "kinematics.h"
 #include "lift_link.h"
+#include "mission_list.h"
 #include "mission_runner.h"
 #include "odometry.h"
 #include "position_control.h"
@@ -52,6 +56,7 @@ void setup()
   Serial.begin(USB_BAUD);
   beginHubSerial();
   Serial2.begin(WHEEL_BAUD);
+  beginButtonSerial();
   Serial6.begin(ARM_BAUD);
   Serial7.begin(LIFT_BAUD);
 
@@ -59,6 +64,11 @@ void setup()
 
   clearBoxResult();
   Serial.println("LIDAR SOURCE = HUB VIA SERIAL1");
+
+  // Two entries sharing a name compile fine and the first one wins every
+  // lookup, which would run the wrong mission with nothing on the console to
+  // say so. Cheap to check once here, impossible to spot later.
+  checkMissionNamesUnique();
 
   beginGyro();
   stopRobot();
@@ -76,6 +86,7 @@ void loop()
   readUsbSerial();
   readHubSerial();
   readSlaveSerial();
+  readButtonSerial();
   readArmSerial();
   updateArmCommunication();
   updateArmClearAndHome();

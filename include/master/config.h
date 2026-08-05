@@ -13,6 +13,7 @@
 //    Serial   USB          Serial Monitor / command console
 //    Serial1  460800       Sensor hub (LiDAR + TFMini + relays + switches)
 //    Serial2  115200       Wheel driver STM32  (T,FL,FR,RL,RR / S / Q)
+//    Serial3  115200       Keypad panel F103   (mission code + '\n')
 //    Serial6  115200       Arm slave STM32     (CMD,<seq>,<command>)
 //    Serial7  115200       Lift controller STM32 (LP,<front>,<back> / LZ)
 //    Wire     400 kHz      BNO085 IMU on SDA pin 18 / SCL pin 19
@@ -25,6 +26,18 @@ constexpr uint32_t WHEEL_BAUD = 115200;
 constexpr uint32_t HUB_TIMEOUT_MS = 300;
 constexpr uint32_t LIFT_BAUD = 115200;
 constexpr uint32_t ARM_BAUD = 115200;
+
+// Keypad panel link:
+// Teensy 4.1 pin 15 (RX3) <- F103 PA9  (TX)
+// Teensy 4.1 pin 14 (TX3) -> F103 PA10 (RX)     [wired, not used yet]
+// Connect the GND of both boards together.
+//
+// >> MUST match F103_SERIAL_BAUD in include/slave_button/config.h. <<
+//    Both boards have to change together or the link reads pure garbage.
+//    115200 was chosen over the F103's old 921600 because it is what every
+//    other slave uses and it is ~8x more tolerant of the motor/relay EMI
+//    around the robot. One keypress per match makes the speed irrelevant.
+constexpr uint32_t BUTTON_BAUD = 115200;
 
 // External arm link:
 // Teensy 4.1 Serial6 TX (pin 24) -> Arm Slave Serial1 RX (PA10)
@@ -118,6 +131,41 @@ constexpr size_t USB_RX_SIZE = 96;
 constexpr size_t SLAVE_RX_SIZE = 160;
 constexpr size_t HUB_RX_SIZE = 192;
 constexpr size_t LIFT_RX_SIZE = 96;
+constexpr size_t BUTTON_RX_SIZE = 32;
+
+// ------------------------------------------------------- keypad mission code
+// The keypad sends the same code REPEAT_COUNT times, REPEAT_INTERVAL_MS apart
+// (5 x 20 ms in src/slave_button/main.cpp -- that is a contract between the
+// two boards, neither side changes it alone). The Master collects whatever
+// arrives inside this window and runs the code that appears most often, so a
+// single corrupted frame is outvoted instead of driving the robot somewhere.
+// The window also absorbs the repeats, which is why there is no separate
+// "ignore repeats for N ms" timer anywhere.
+//
+// 5 frames spread over ~80 ms; 150 ms leaves room for the last one to land.
+// Cost is ~150 ms of delay before a mission starts, once per match.
+constexpr uint32_t BUTTON_VOTE_WINDOW_MS = 150;
+
+// Distinct codes tracked inside one window. Reaching this many different
+// codes in 150 ms is not a vote any more, it is a broken cable, so the whole
+// window is thrown away when it overflows.
+constexpr uint8_t BUTTON_VOTE_MAX_CANDIDATES = 8;
+
+// Accepted code lengths, keyed by the first digit (the Mode).
+// A table rather than if/else so a future Mode 2 is one line, not a branch.
+//   Mode 0 -> field(1) + line(1) + box(4) + mode(1) = 7   e.g. 0120011
+//   Mode 1 -> field(1) + row(1)  + step(1) + mode(1) = 4   e.g. 1130
+struct MissionCodeLength
+{
+  char modeDigit;
+  uint8_t length;
+};
+
+constexpr MissionCodeLength MISSION_CODE_LENGTHS[] =
+{
+  { '0', 7 },
+  { '1', 4 },
+};
 
 // Extra hardware RX memory for the high-rate HUB stream on Teensy 4.1.
 // Serial1.addMemoryForRead() must be called before Serial1.begin().

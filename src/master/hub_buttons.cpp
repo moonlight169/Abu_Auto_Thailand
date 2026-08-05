@@ -82,18 +82,26 @@ static void updateYellowRelay4Pulse()
   }
 }
 
+// Addressed by name, never by position. The registry holds 117 entries now
+// and grows every time a keypad pattern is filled in; an index would silently
+// point somewhere else the moment anything is inserted or reordered. A typo
+// here shows up at run time as UNKNOWN MISSION CODE instead of at compile
+// time, which is the one thing given up in exchange.
+static constexpr const char *BLUE_BUTTON_MISSION = "MISSION 2";  // mission2
+static constexpr const char *RED_BUTTON_MISSION = "MISSION 1";   // mission1
+
 static void handleHubButtonPressed(uint8_t bit)
 {
   switch (bit)
   {
     case HUB_SW_BLUE:
       Serial.println("SW_BLUE PRESSED - START MISSION 2");
-      startMission(2);
+      startMissionByCode(BLUE_BUTTON_MISSION);
       break;
 
     case HUB_SW_RED:
       Serial.println("SW_RED PRESSED - START MISSION 1");
-      startMission(1);
+      startMissionByCode(RED_BUTTON_MISSION);
       break;
 
     case HUB_SW_YELLOW:

@@ -12,3 +12,14 @@ extern const size_t MISSION_PROGRAM_COUNT;
 extern uint8_t selectedMission;
 
 const MissionProgram &activeMissionProgram();
+
+// Exact-match lookup on the `name` field. Returns the index into
+// missionPrograms[], or -1 when nothing matches. This is what lets the keypad
+// codes and the Hub buttons address a mission by name instead of by position,
+// so adding or reordering entries can never point a button somewhere else.
+int findMissionByName(const char *name);
+
+// Reports every duplicated name to the USB console and returns true when they
+// are all unique. Two entries with the same name compile without a warning and
+// the first one silently wins every lookup, so main.cpp runs this once at boot.
+bool checkMissionNamesUnique();

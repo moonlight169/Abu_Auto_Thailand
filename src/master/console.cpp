@@ -6,6 +6,7 @@
 #include <strings.h>
 
 #include "arm_link.h"
+#include "button_link.h"
 #include "gyro.h"
 #include "high_align.h"
 #include "hub_link.h"
@@ -27,6 +28,7 @@ void printHelp()
   Serial.println("M            : start selected mission");
   Serial.println("M1 / M2 / M3 : select and start that mission");
   Serial.println("SEL 2        : select mission without starting");
+  Serial.println("K0120011     : fake a keypad code (same filters as Serial3)");
   Serial.println("A            : abort mission (uppercase only; a = drive)");
   Serial.println("--- drive ---");
   Serial.println("100a / 100b  : forward / backward 100 RPM");
@@ -65,11 +67,14 @@ void printHelp()
   Serial.println("o    : toggle continuous robot pose print");
   Serial.println("h    : help");
   Serial.println("--- Hub buttons (pressed, not typed) ---");
-  Serial.println("SW_B  (blue) : start Mission 2");
-  Serial.println("SW_RED       : start Mission 3");
+  Serial.println("SW_B  (blue) : start \"MISSION 2\"");
+  Serial.println("SW_RED       : start \"MISSION 1\"");
   Serial.println("SW_YELLOW    : stop, zero odometry, arm+spin+lift home,");
   Serial.println("               pulse gripper open");
   Serial.println("SW_G (green) : not used");
+  Serial.println("--- keypad panel (Serial3) ---");
+  Serial.println("Mode 0 -> 7 digits e.g. 0120011, Mode 1 -> 4 digits e.g. 1130");
+  Serial.println("Sent 5x per press; the Master votes over 150 ms, then runs it.");
   Serial.println("Number is wheel RPM, maximum 420 RPM.");
   Serial.println("Legacy a-h commands read the LAST letter of the line.");
 }
@@ -348,6 +353,16 @@ void processUsbLine(char *line)
       strcasecmp(line, "ARM STATUS") == 0)
   {
     sendArmAuxCommand("STATUS");
+    return;
+  }
+
+  // "K0120011" pretends to be a keypad frame. It goes through submitMissionCode()
+  // exactly like Serial3 does -- same filters, same vote window -- so the whole
+  // path can be tested from the Serial Monitor with no keypad board attached.
+  // Type it 5 times quickly to rehearse a real burst.
+  if ((line[0] == 'K' || line[0] == 'k') && line[1] != '\0')
+  {
+    submitMissionCode(line + 1, "CONSOLE");
     return;
   }
 

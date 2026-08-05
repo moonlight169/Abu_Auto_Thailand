@@ -118,6 +118,31 @@ void startMission(uint8_t missionNumber)
   Serial.println(activeMissionProgram().name);
 }
 
+bool startMissionByCode(const char *code)
+{
+  const int index = findMissionByName(code);
+
+  if (index < 0)
+  {
+    Serial.print("UNKNOWN MISSION CODE: [");
+    Serial.print(code != nullptr ? code : "");
+    Serial.println("]");
+    return false;
+  }
+
+  // startMission() numbers missions from 1 and takes a uint8_t, so entry 255
+  // onwards cannot be addressed without widening that type.
+  if (index >= 255)
+  {
+    Serial.print("MISSION INDEX OUT OF RANGE: ");
+    Serial.println(index);
+    return false;
+  }
+
+  startMission((uint8_t)(index + 1));
+  return true;
+}
+
 void resetBeforeMission()
 {
   stopRobot();

@@ -11,6 +11,8 @@
 
 #include "mission_list.h"
 
+#include <string.h>
+
 /////////////////////////////////////////////////////////////////////////////////MissionStep/////////////////////////////////////////////////////////////////////////////////
 
 // Add more mission programs by creating another MissionStep array and
@@ -140,11 +142,873 @@ const MissionStep mission2[] =
 
 /////////////////////////////////////////////////////////////////////////////////MissionStep/////////////////////////////////////////////////////////////////////////////////
 
+// ===========================================================================
+//  >>> PATTERN PROGRAMS - one per code the keypad can send. <<<
+//
+//  ชื่อ array คือ 'p' + รหัส  ส่วนชื่อในทะเบียนคือ "ตัวรหัสเป๊ะ ๆ"
+//  master ไม่แกะความหมายของหลักไหนเลย มันแค่ strcmp ชื่อกับรหัสที่รับมา
+//
+//    Mode 0 : mode(0) + field(0=BLUE,1=RED) + line(1..3) + box(4 หลัก 0/1)
+//    Mode 1 : mode(1) + field(0=BLUE,1=RED) + row(1..3)  + step(0,2,3)
+//
+//  ทุกอันเป็นโครงเปล่า RESET -> END รอเติมของจริง เติมได้เลยไม่ต้องแก้ที่อื่น
+//  ตราบใดที่ยังไม่เปลี่ยนชื่อ  ห้ามแทรกอันใหม่ไว้หน้า exMission/MISSION 1/2
+//  ในทะเบียนข้างล่าง เพราะคำสั่ง "Mn" ทาง USB ยังอ้างด้วยลำดับอยู่
+// ===========================================================================
+
+// ---------------------------- Mode 0 | Field 0 (BLUE) | Line 1 ----------------------------
+
+const MissionStep p0010000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0010111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0011111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 0 | Field 0 (BLUE) | Line 2 ----------------------------
+
+const MissionStep p0020000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0020111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0021111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 0 | Field 0 (BLUE) | Line 3 ----------------------------
+
+const MissionStep p0030000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0030111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0031111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 0 | Field 1 (RED) | Line 1 ----------------------------
+
+const MissionStep p0110000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0110111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0111111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 0 | Field 1 (RED) | Line 2 ----------------------------
+
+const MissionStep p0120000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0120111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0121111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 0 | Field 1 (RED) | Line 3 ----------------------------
+
+const MissionStep p0130000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0130111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131000[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131001[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131011[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131100[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131101[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p0131111[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 1 ----------------------------
+
+const MissionStep p1010[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1012[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1013[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 2 ----------------------------
+
+const MissionStep p1020[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1022[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1023[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 3 ----------------------------
+
+const MissionStep p1030[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1032[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1033[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 1 (RED) | Row 1 ----------------------------
+
+const MissionStep p1110[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1112[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1113[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 1 (RED) | Row 2 ----------------------------
+
+const MissionStep p1120[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1122[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1123[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 1 (RED) | Row 3 ----------------------------
+
+const MissionStep p1130[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1132[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p1133[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+
 const MissionProgram missionPrograms[] =
 {
+  // ---- ของเดิม อย่าย้ายลำดับ 3 อันนี้ ----
   { "exMission", exMission, ARRAY_COUNT(exMission) },
   { "MISSION 1", mission1, ARRAY_COUNT(mission1) },
   { "MISSION 2", mission2, ARRAY_COUNT(mission2) },
+
+  // ---- Mode 0 | Field 0 (BLUE) | Line 1 ----
+  { "0010000", p0010000, ARRAY_COUNT(p0010000) },
+  { "0010001", p0010001, ARRAY_COUNT(p0010001) },
+  { "0010010", p0010010, ARRAY_COUNT(p0010010) },
+  { "0010011", p0010011, ARRAY_COUNT(p0010011) },
+  { "0010100", p0010100, ARRAY_COUNT(p0010100) },
+  { "0010101", p0010101, ARRAY_COUNT(p0010101) },
+  { "0010110", p0010110, ARRAY_COUNT(p0010110) },
+  { "0010111", p0010111, ARRAY_COUNT(p0010111) },
+  { "0011000", p0011000, ARRAY_COUNT(p0011000) },
+  { "0011001", p0011001, ARRAY_COUNT(p0011001) },
+  { "0011010", p0011010, ARRAY_COUNT(p0011010) },
+  { "0011011", p0011011, ARRAY_COUNT(p0011011) },
+  { "0011100", p0011100, ARRAY_COUNT(p0011100) },
+  { "0011101", p0011101, ARRAY_COUNT(p0011101) },
+  { "0011110", p0011110, ARRAY_COUNT(p0011110) },
+  { "0011111", p0011111, ARRAY_COUNT(p0011111) },
+
+  // ---- Mode 0 | Field 0 (BLUE) | Line 2 ----
+  { "0020000", p0020000, ARRAY_COUNT(p0020000) },
+  { "0020001", p0020001, ARRAY_COUNT(p0020001) },
+  { "0020010", p0020010, ARRAY_COUNT(p0020010) },
+  { "0020011", p0020011, ARRAY_COUNT(p0020011) },
+  { "0020100", p0020100, ARRAY_COUNT(p0020100) },
+  { "0020101", p0020101, ARRAY_COUNT(p0020101) },
+  { "0020110", p0020110, ARRAY_COUNT(p0020110) },
+  { "0020111", p0020111, ARRAY_COUNT(p0020111) },
+  { "0021000", p0021000, ARRAY_COUNT(p0021000) },
+  { "0021001", p0021001, ARRAY_COUNT(p0021001) },
+  { "0021010", p0021010, ARRAY_COUNT(p0021010) },
+  { "0021011", p0021011, ARRAY_COUNT(p0021011) },
+  { "0021100", p0021100, ARRAY_COUNT(p0021100) },
+  { "0021101", p0021101, ARRAY_COUNT(p0021101) },
+  { "0021110", p0021110, ARRAY_COUNT(p0021110) },
+  { "0021111", p0021111, ARRAY_COUNT(p0021111) },
+
+  // ---- Mode 0 | Field 0 (BLUE) | Line 3 ----
+  { "0030000", p0030000, ARRAY_COUNT(p0030000) },
+  { "0030001", p0030001, ARRAY_COUNT(p0030001) },
+  { "0030010", p0030010, ARRAY_COUNT(p0030010) },
+  { "0030011", p0030011, ARRAY_COUNT(p0030011) },
+  { "0030100", p0030100, ARRAY_COUNT(p0030100) },
+  { "0030101", p0030101, ARRAY_COUNT(p0030101) },
+  { "0030110", p0030110, ARRAY_COUNT(p0030110) },
+  { "0030111", p0030111, ARRAY_COUNT(p0030111) },
+  { "0031000", p0031000, ARRAY_COUNT(p0031000) },
+  { "0031001", p0031001, ARRAY_COUNT(p0031001) },
+  { "0031010", p0031010, ARRAY_COUNT(p0031010) },
+  { "0031011", p0031011, ARRAY_COUNT(p0031011) },
+  { "0031100", p0031100, ARRAY_COUNT(p0031100) },
+  { "0031101", p0031101, ARRAY_COUNT(p0031101) },
+  { "0031110", p0031110, ARRAY_COUNT(p0031110) },
+  { "0031111", p0031111, ARRAY_COUNT(p0031111) },
+
+  // ---- Mode 0 | Field 1 (RED) | Line 1 ----
+  { "0110000", p0110000, ARRAY_COUNT(p0110000) },
+  { "0110001", p0110001, ARRAY_COUNT(p0110001) },
+  { "0110010", p0110010, ARRAY_COUNT(p0110010) },
+  { "0110011", p0110011, ARRAY_COUNT(p0110011) },
+  { "0110100", p0110100, ARRAY_COUNT(p0110100) },
+  { "0110101", p0110101, ARRAY_COUNT(p0110101) },
+  { "0110110", p0110110, ARRAY_COUNT(p0110110) },
+  { "0110111", p0110111, ARRAY_COUNT(p0110111) },
+  { "0111000", p0111000, ARRAY_COUNT(p0111000) },
+  { "0111001", p0111001, ARRAY_COUNT(p0111001) },
+  { "0111010", p0111010, ARRAY_COUNT(p0111010) },
+  { "0111011", p0111011, ARRAY_COUNT(p0111011) },
+  { "0111100", p0111100, ARRAY_COUNT(p0111100) },
+  { "0111101", p0111101, ARRAY_COUNT(p0111101) },
+  { "0111110", p0111110, ARRAY_COUNT(p0111110) },
+  { "0111111", p0111111, ARRAY_COUNT(p0111111) },
+
+  // ---- Mode 0 | Field 1 (RED) | Line 2 ----
+  { "0120000", p0120000, ARRAY_COUNT(p0120000) },
+  { "0120001", p0120001, ARRAY_COUNT(p0120001) },
+  { "0120010", p0120010, ARRAY_COUNT(p0120010) },
+  { "0120011", p0120011, ARRAY_COUNT(p0120011) },
+  { "0120100", p0120100, ARRAY_COUNT(p0120100) },
+  { "0120101", p0120101, ARRAY_COUNT(p0120101) },
+  { "0120110", p0120110, ARRAY_COUNT(p0120110) },
+  { "0120111", p0120111, ARRAY_COUNT(p0120111) },
+  { "0121000", p0121000, ARRAY_COUNT(p0121000) },
+  { "0121001", p0121001, ARRAY_COUNT(p0121001) },
+  { "0121010", p0121010, ARRAY_COUNT(p0121010) },
+  { "0121011", p0121011, ARRAY_COUNT(p0121011) },
+  { "0121100", p0121100, ARRAY_COUNT(p0121100) },
+  { "0121101", p0121101, ARRAY_COUNT(p0121101) },
+  { "0121110", p0121110, ARRAY_COUNT(p0121110) },
+  { "0121111", p0121111, ARRAY_COUNT(p0121111) },
+
+  // ---- Mode 0 | Field 1 (RED) | Line 3 ----
+  { "0130000", p0130000, ARRAY_COUNT(p0130000) },
+  { "0130001", p0130001, ARRAY_COUNT(p0130001) },
+  { "0130010", p0130010, ARRAY_COUNT(p0130010) },
+  { "0130011", p0130011, ARRAY_COUNT(p0130011) },
+  { "0130100", p0130100, ARRAY_COUNT(p0130100) },
+  { "0130101", p0130101, ARRAY_COUNT(p0130101) },
+  { "0130110", p0130110, ARRAY_COUNT(p0130110) },
+  { "0130111", p0130111, ARRAY_COUNT(p0130111) },
+  { "0131000", p0131000, ARRAY_COUNT(p0131000) },
+  { "0131001", p0131001, ARRAY_COUNT(p0131001) },
+  { "0131010", p0131010, ARRAY_COUNT(p0131010) },
+  { "0131011", p0131011, ARRAY_COUNT(p0131011) },
+  { "0131100", p0131100, ARRAY_COUNT(p0131100) },
+  { "0131101", p0131101, ARRAY_COUNT(p0131101) },
+  { "0131110", p0131110, ARRAY_COUNT(p0131110) },
+  { "0131111", p0131111, ARRAY_COUNT(p0131111) },
+
+  // ---- Mode 1 | Field 0 (BLUE) | Row 1 ----
+  { "1010", p1010, ARRAY_COUNT(p1010) },
+  { "1012", p1012, ARRAY_COUNT(p1012) },
+  { "1013", p1013, ARRAY_COUNT(p1013) },
+
+  // ---- Mode 1 | Field 0 (BLUE) | Row 2 ----
+  { "1020", p1020, ARRAY_COUNT(p1020) },
+  { "1022", p1022, ARRAY_COUNT(p1022) },
+  { "1023", p1023, ARRAY_COUNT(p1023) },
+
+  // ---- Mode 1 | Field 0 (BLUE) | Row 3 ----
+  { "1030", p1030, ARRAY_COUNT(p1030) },
+  { "1032", p1032, ARRAY_COUNT(p1032) },
+  { "1033", p1033, ARRAY_COUNT(p1033) },
+
+  // ---- Mode 1 | Field 1 (RED) | Row 1 ----
+  { "1110", p1110, ARRAY_COUNT(p1110) },
+  { "1112", p1112, ARRAY_COUNT(p1112) },
+  { "1113", p1113, ARRAY_COUNT(p1113) },
+
+  // ---- Mode 1 | Field 1 (RED) | Row 2 ----
+  { "1120", p1120, ARRAY_COUNT(p1120) },
+  { "1122", p1122, ARRAY_COUNT(p1122) },
+  { "1123", p1123, ARRAY_COUNT(p1123) },
+
+  // ---- Mode 1 | Field 1 (RED) | Row 3 ----
+  { "1130", p1130, ARRAY_COUNT(p1130) },
+  { "1132", p1132, ARRAY_COUNT(p1132) },
+  { "1133", p1133, ARRAY_COUNT(p1133) },
 };
 
 const size_t MISSION_PROGRAM_COUNT = ARRAY_COUNT(missionPrograms);
@@ -154,4 +1018,56 @@ uint8_t selectedMission = 0;  // 0 = Mission 1
 const MissionProgram &activeMissionProgram()
 {
   return missionPrograms[selectedMission];
+}
+
+int findMissionByName(const char *name)
+{
+  if (name == nullptr)
+    return -1;
+
+  for (size_t i = 0; i < MISSION_PROGRAM_COUNT; i++)
+  {
+    if (strcmp(missionPrograms[i].name, name) == 0)
+      return (int)i;
+  }
+
+  return -1;
+}
+
+bool checkMissionNamesUnique()
+{
+  bool unique = true;
+
+  // A duplicated name is invisible to the compiler and the first entry always
+  // wins the lookup, so the wrong mission would run with no warning at all.
+  // Comparing every pair once is ~6800 strcmp for 117 entries: a few ms, once.
+  for (size_t i = 0; i < MISSION_PROGRAM_COUNT; i++)
+  {
+    for (size_t j = i + 1; j < MISSION_PROGRAM_COUNT; j++)
+    {
+      if (strcmp(missionPrograms[i].name, missionPrograms[j].name) != 0)
+        continue;
+
+      unique = false;
+      Serial.print("DUPLICATE MISSION NAME: \"");
+      Serial.print(missionPrograms[i].name);
+      Serial.print("\" AT INDEX ");
+      Serial.print(i);
+      Serial.print(" AND ");
+      Serial.println(j);
+    }
+  }
+
+  if (unique)
+  {
+    Serial.print("MISSION REGISTRY OK: ");
+    Serial.print(MISSION_PROGRAM_COUNT);
+    Serial.println(" UNIQUE NAMES");
+  }
+  else
+  {
+    Serial.println("WARNING: FIX mission_list.cpp - THE FIRST ENTRY ALWAYS WINS");
+  }
+
+  return unique;
 }
