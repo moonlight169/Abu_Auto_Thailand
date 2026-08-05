@@ -16,15 +16,32 @@ slave_hub    (Teensy 4.1)  <--UART 460800--> |
 slave_wheel  (Blackpill)   <--UART 115200--> | Master (Teensy 4.1)
 slave_arm    (Blackpill)   <--UART 115200--> |
 slave_lift   (Blackpill)   <--UART 115200--> |
-slave_button (Blue Pill)   ---UART 921600--> |  ⚠ master ยังไม่มีตัวอ่าน
+slave_button (Blue Pill)   ---UART 921600--> |  ⚠ master รอที่ 115200
                                              +--- I2C 400kHz --- BNO085 IMU
 ```
 
 RPLiDAR และ TFMini-S ทั้ง 4 ตัวไม่ได้ต่อกับ Master โดยตรง แต่ต่อเข้า `slave_hub`
 ซึ่งประมวลผลสแกนให้เสร็จแล้วส่งผลลัพธ์กล่อง/กำแพงมาให้ Master ในแพ็กเก็ตเดียว
 
-`slave_button` เป็นบอร์ดใหม่ที่ยังทำงานไม่ครบวง — ฝั่งบอร์ดเสร็จแล้ว (กดปุ่ม → OLED → ยิง
-text ออก `Serial1`) แต่ฝั่ง Master ยังไม่มีโค้ดอ่าน `Serial3` เลย จึงยังสั่งงานอะไรไม่ได้
+### ⚠ สถานะลิงก์ `slave_button` — ฝั่ง Master เสร็จแล้ว ฝั่งบอร์ดยังไม่แก้
+
+ฝั่ง Master ทำเสร็จแล้ว (`src/master/button_link.cpp` อ่าน `Serial3`, กรอง, โหวต,
+เริ่มภารกิจตามชื่อ) แต่ **ฝั่งบอร์ดคีย์แพดยังเป็นของเดิมทุกบรรทัด** จึงยังคุยกันไม่ได้
+เพราะไม่ตรงกัน 2 จุด:
+
+| | Master รอ | บอร์ดคีย์แพดส่งจริงตอนนี้ | แก้ที่ |
+|---|---|---|---|
+| baud | 115200 (`BUTTON_BAUD`) | **921600** (`F103_SERIAL_BAUD`) | `include/slave_button/config.h` |
+| payload | ตัวเลขล้วน `0120011` / `1130` | **`A1`..`A8` / `B1`..`B8`** | `src/slave_button/forest_menu.cpp` |
+
+ถ้าแก้แค่ baud อย่างเดียว Master จะอ่านได้แต่ตีตกทุกบรรทัดที่ชั้น "ตัวเลขล้วน"
+แล้วขึ้น `SERIAL3 BAD CODE (NOT DIGITS): [A4]` — ต้องแก้ทั้งสองจุดถึงจะครบวง
+
+ส่วนที่ **ตรงกันแล้ว** คือจังหวะส่ง: บอร์ดส่งซ้ำ 5 ครั้งห่าง 20 ms ซึ่งเป็นค่าที่หน้าต่าง
+โหวต 150 ms ฝั่ง Master ออกแบบมารองรับพอดี — ข้อนี้ไม่ต้องแตะ
+
+ระหว่างที่ยังไม่แก้ ทดสอบเส้นทางทั้งหมดได้จาก Serial Monitor ด้วยคำสั่ง `K0120011`
+ซึ่งวิ่งผ่านตัวกรองและระบบโหวตชุดเดียวกันเป๊ะ
 
 ## 🛠️ Hardware & Tech Stack
 
@@ -59,10 +76,11 @@ PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_
 | ไฟล์ | ใช้แก้อะไร |
 |------|------------|
 | `include/master/config.h` | **ค่า tuning ทุกตัว** — gain, ความเร็ว, timeout, tolerance, threshold TF, baud |
-| `src/master/mission_list.cpp` | **ลำดับภารกิจจริง** เริ่มที่ไฟล์นี้ |
+| `src/master/mission_list.cpp` | **ลำดับภารกิจจริง + ทะเบียนชื่อ/รหัส** เริ่มที่ไฟล์นี้ |
 | `include/master/mission_steps.h` | vocabulary ของ `*_STEP()` ที่เอาไปเรียงเป็นภารกิจ |
 | `src/master/mission_runner.cpp` | พฤติกรรมจริงของแต่ละ step |
 | `src/master/console.cpp` | คำสั่งบน Serial Monitor |
+| `src/master/button_link.cpp` | ตัวกรอง + ระบบโหวตของรหัสคีย์แพดบน `Serial3` |
 
 ค่า threshold ของการตรวจจับ LiDAR (ความกว้างกล่อง, cluster gap, filter alpha) อยู่ฝั่ง hub
 ที่ `src/slave_hub/config.cpp` ไม่ใช่ฝั่ง master
@@ -79,6 +97,7 @@ PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_
 | `Serial` | 115200 | USB Serial Monitor / console |
 | `Serial1` | 460800 | slave_hub |
 | `Serial2` | 115200 | slave_wheel |
+| `Serial3` | 115200 | slave_button (RX3 = pin 15 / TX3 = pin 14, TX ยังไม่ได้ใช้) |
 | `Serial6` | 115200 | slave_arm (TX pin 24 / RX pin 25) |
 | `Serial7` | 115200 | slave_lift |
 | `Wire` | 400 kHz | BNO085 IMU (SDA 18 / SCL 19) |
@@ -148,6 +167,20 @@ debounce 5 ms และนับเฉพาะขอบขาลง กดค�
 
 ค่า pin ทั้งหมดอยู่ใน `include/slave_button/config.h`
 
+**สิ่งที่ต้องแก้บนบอร์ดนี้เพื่อให้ลิงก์ครบวง:** เปลี่ยน label `A1`..`B8` เป็นรหัสภารกิจ
+ตัวเลขล้วนตามที่ Master รอ และลด `F103_SERIAL_BAUD` เป็น 115200
+
+บัฟเฟอร์ 2 ตัวที่เล็กเกินสำหรับรหัส 7 หลัก ต้องขยายด้วย:
+
+| ตัวแปร | ไฟล์ | ขนาดตอนนี้ | ต้องการ |
+|--------|------|-----------|---------|
+| `_label[4]` | `forest_menu.cpp` | พอสำหรับ `"A1"` | ≥ 8 |
+| `_txFrame[8]` | `main.cpp` | พอสำหรับ `"A1\n"` | ≥ 9 (รหัส 7 + `\n` + NUL) |
+
+ถ้าไม่ขยาย `_txFrame` ก็ยังใช้งานได้ — `snprintf()` จะตัด `'\n'` ทิ้งแล้วส่ง NUL ออกไปแทน
+ซึ่งฝั่ง Master รับมือไว้แล้วโดยนับ `'\0'` เป็นตัวจบบรรทัดด้วย แต่ `_label` ต้องขยายแน่นอน
+ไม่งั้นรหัสจะโดนตัดตั้งแต่ต้นทาง
+
 ## 📡 Protocol
 
 | Link | Master ส่ง | Slave ตอบ |
@@ -156,12 +189,34 @@ debounce 5 ms และนับเฉพาะขอบขาลง กดค�
 | hub | `R1 ON` `ARM 40` `SPIN 100` `MODE BOX` `MODE WALL` `STREAM ON` | `HUB,<ms>,<MODE>,<found>,<dist>,<offset>,<angle>,<width>,<points>,<inputMask>,<relayMask>,<arm>,<spin>,<tf1..tf4>,<tfValidMask>` ที่ 20 Hz |
 | arm | `CMD,<seq>,<HOME\|B,deg\|T,deg\|POS,b,t\|STATUS\|STOP\|CLEAR>` | `ACK` / `STATE` / `DONE` / `ERR` (ตอบพร้อม seq เดิม) |
 | lift | `LP,<front>,<back>` / `LZ` / `S` | `LIFT_POS,<front>,<back>` ที่ 50 Hz + `LIFT_BUSY` / `LIFT_REACHED,<f>,<b>` / `LIFT_HOMING` / `LIFT_HOME_REACHED` / `LIFT_ERROR,<reason>` |
-| button ⚠ | — (ทางเดียว) | `A1`..`A8` / `B1`..`B8` + `\n` ตอนกดปุ่ม |
+| button ⚠ | — (ทางเดียว) | รหัสภารกิจ + `\n` ตอนกดปุ่ม (บอร์ดยังส่ง `A1`..`B8` อยู่) |
 
-⚠ ลิงก์ button ยังไม่มีตัวอ่านฝั่ง Master — บอร์ดส่งออกมาลอย ๆ ไปก่อน
-และเป็น plain text ล้วน ไม่มี framing/checksum เหมือนลิงก์อื่น
-การกด 1 ครั้งจะส่งซ้ำ **5 บรรทัด ห่างกัน 20 ms** เผื่อฝั่งรับพลาดรอบแรก
-ตอนเขียนฝั่ง Master ต้องกรองซ้ำเอง (เช่น ทิ้ง label เดิมที่มาภายใน ~200 ms)
+ลิงก์ button เป็น plain text ล้วน ไม่มี framing/checksum เหมือนลิงก์อื่น
+การกด 1 ครั้งส่งซ้ำ **5 บรรทัด ห่างกัน 20 ms** เผื่อฝั่งรับพลาดรอบแรก
+
+**สิ่งที่ Master รอรับ** (`src/master/button_link.cpp`) คือรหัสภารกิจตัวเลขล้วน
+ที่ความยาวถูกกำหนดด้วยหลักแรก:
+
+| Mode | รูปแบบ | ยาว | ตัวอย่าง |
+|------|--------|-----|---------|
+| `0` | mode + field + line + box(4 หลัก) | 7 | `0120011` |
+| `1` | mode + field + row + step | 4 | `1130` |
+
+Master ไม่แกะความหมายของหลักไหนเลย มันเอารหัสไป `strcmp` กับ **ชื่อ** ของภารกิจ
+ใน `missionPrograms[]` ตรง ๆ — ความหมายของแต่ละหลักอยู่ในคอมเมนต์ของ
+`src/master/mission_list.cpp` เท่านั้น
+
+ตัวกรอง 4 ชั้นก่อนภารกิจจะเริ่ม:
+
+1. บรรทัดว่าง → ทิ้งเงียบ ๆ
+2. ไม่ใช่ตัวเลข 0-9 ล้วน → `BAD CODE (NOT DIGITS)`
+3. ความยาวไม่ตรงกับ Mode → `BAD CODE (LENGTH)` / `(UNKNOWN MODE)`
+4. ไม่มีชื่อนี้ในทะเบียน → `UNKNOWN MISSION CODE`
+
+ผ่านครบแล้วเข้า **ระบบโหวต 150 ms** — เก็บทุกเฟรมในหน้าต่างแล้วรันรหัสที่มาบ่อยที่สุด
+รหัสเดียวในหน้าต่างผ่านทันทีแม้มาเฟรมเดียว แต่ถ้ามีหลายรหัสแข่งกันต้องชนะเดี่ยว ๆ
+และมีอย่างน้อย 2 เฟรมหนุน · เจอรหัสต่างกันเกิน 8 แบบใน 150 ms = ถือว่าสายพัง ทิ้งทั้งหน้าต่าง
+หน้าต่างนี้ดูดเฟรมซ้ำ 5 เฟรมไปในตัว จึงไม่ต้องมีตัวกรองซ้ำแยกอีก
 
 ## ▶️ Build & Upload
 
@@ -184,19 +239,25 @@ Blackpill และ Blue Pill ตั้งค่าไว้อัปโหล�
 
 | ปุ่ม | ผล |
 |------|-----|
-| SW_Blue | เริ่ม Mission 2 |
-| SW_Red | เริ่ม Mission 3 |
+| SW_Blue | เริ่มภารกิจชื่อ `"MISSION 2"` (สนามฟ้า) |
+| SW_Red | เริ่มภารกิจชื่อ `"MISSION 1"` (สนามแดง) |
 | SW_Yellow | หยุดทุกอย่าง, zero odometry + gyro, arm/spin/lift กลับ home, กระตุกกริปเปอร์เปิด |
 | SW_Green | ยังไม่ได้ใช้ |
 
+ปุ่มอ้างภารกิจด้วย **ชื่อ** ไม่ใช่ลำดับ (`src/master/hub_buttons.cpp`) การเพิ่มหรือสลับ
+ลำดับรายการในทะเบียนจึงไม่ทำให้ปุ่มไปเริ่มภารกิจผิด ตอนบูต Master จะเช็คชื่อซ้ำให้
+ครั้งหนึ่งแล้วพิมพ์ `MISSION REGISTRY OK: <n> UNIQUE NAMES`
+
 **แผงคีย์แพด (slave_button):** กดแล้วโชว์ label บน OLED 2 วินาทีแล้วกลับเป็น `-`
-พร้อมยิง text ออก `Serial1` — แต่ยังไม่ผูกกับภารกิจใด เพราะ Master ยังไม่มีตัวอ่าน
-ทดสอบเองได้ที่ `pio device monitor -e slave_button` จะเห็น `[KEY] A4 x5` ทุกครั้งที่กด
+พร้อมยิง text ออก `Serial1` — ฝั่ง Master พร้อมรับแล้ว แต่ยังสั่งงานไม่ได้จนกว่าจะแก้
+baud กับ payload บนบอร์ดคีย์แพด (ดูหัวข้อสถานะลิงก์ด้านบน)
+ทดสอบบอร์ดเองได้ที่ `pio device monitor -e slave_button` จะเห็น `[KEY] A4 x5` ทุกครั้งที่กด
 
 **คำสั่งที่ใช้บ่อยบน Serial Monitor ของ master** (พิมพ์ `h` เพื่อดูทั้งหมด):
 
 ```
 M / M1 / M2      เริ่มภารกิจ (M = ภารกิจที่เลือกไว้)
+K0120011         จำลองรหัสคีย์แพด (ผ่านตัวกรอง + โหวตชุดเดียวกับ Serial3)
 A                ยกเลิกภารกิจ
 s                หยุดฉุกเฉิน
 V,0.2,0,0.3      สั่งความเร็ว local (vx, vy m/s, wz rad/s)
@@ -207,6 +268,10 @@ AH / AB 90       arm home / arm bottom 90 deg
 i                สถานะ I/O ของ hub
 r / z            reset yaw ของ gyro / zero odometry
 ```
+
+⚠ **`Mn` อ้างด้วยลำดับในทะเบียน ไม่ใช่ชื่อ** และ `exMission` อยู่หัวทะเบียน เลขจึงเลื่อนไป 1:
+`M1` = `exMission` · `M2` = `"MISSION 1"` (แดง) · `M3` = `"MISSION 2"` (ฟ้า)
+ส่วนปุ่มบนหุ่นกับรหัสคีย์แพดอ้างด้วยชื่อ จึงไม่โดนผลกระทบนี้
 
 **คำสั่งบน Serial Monitor ของ slave_lift** (คำสั่งชุดเดียวกันนี้รับจาก Master ทาง `Serial1` ด้วย):
 
