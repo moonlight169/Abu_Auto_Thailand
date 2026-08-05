@@ -92,6 +92,7 @@ const MissionStep exMission[] =
   END_STEP()
 };
 
+//RED
 const MissionStep mission1[] =
 {
   RESET_STEP(),
@@ -114,6 +115,7 @@ const MissionStep mission1[] =
   END_STEP()
 };
 
+//BLUE
 const MissionStep mission2[] =
 {
   RESET_STEP(),
