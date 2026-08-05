@@ -88,12 +88,12 @@ static void handleHubButtonPressed(uint8_t bit)
   {
     case HUB_SW_BLUE:
       Serial.println("SW_B PRESSED - START MISSION 2");
-      startMission(1);
+      startMission(2);
       break;
 
     case HUB_SW_RED:
       Serial.println("SW_RED PRESSED - START MISSION 3");
-      startMission(2);
+      startMission(1);
       break;
 
     case HUB_SW_YELLOW:
