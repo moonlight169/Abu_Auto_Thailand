@@ -82,7 +82,7 @@ static void updateYellowRelay4Pulse()
   }
 }
 
-// Addressed by name, never by position. The registry holds 117 entries now
+// Addressed by name, never by position. The registry holds 129 entries now
 // and grows every time a keypad pattern is filled in; an index would silently
 // point somewhere else the moment anything is inserted or reordered. A typo
 // here shows up at run time as UNKNOWN MISSION CODE instead of at compile

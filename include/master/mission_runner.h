@@ -26,7 +26,7 @@ void updateMission();
 //
 // NOTE: no digit or length checking happens here. That belongs to whoever
 // reads the wire (button_link.cpp), because the Hub buttons pass names that
-// are neither numeric nor 4/7 characters long.
+// are neither numeric nor 5/7 characters long.
 bool startMissionByCode(const char *code);
 
 void resetBeforeMission();

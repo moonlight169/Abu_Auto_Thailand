@@ -153,8 +153,11 @@ constexpr uint8_t BUTTON_VOTE_MAX_CANDIDATES = 8;
 
 // Accepted code lengths, keyed by the first digit (the Mode).
 // A table rather than if/else so a future Mode 2 is one line, not a branch.
-//   Mode 0 -> field(1) + line(1) + box(4) + mode(1) = 7   e.g. 0120011
-//   Mode 1 -> field(1) + row(1)  + step(1) + mode(1) = 4   e.g. 1130
+// Digits are listed in the order they arrive, Mode first.
+//   Mode 0 -> mode(1) + field(1) + line(1) + box(4)          = 7   e.g. 0120011
+//   Mode 1 -> mode(1) + field(1) + step(1) + row(1) + row(1) = 5   e.g. 11023
+// In Mode 1 the second row digit is a real row when step is 0 (run every step,
+// two rows), and 0 when step is 2 or 3 (one row only).
 struct MissionCodeLength
 {
   char modeDigit;
@@ -164,7 +167,7 @@ struct MissionCodeLength
 constexpr MissionCodeLength MISSION_CODE_LENGTHS[] =
 {
   { '0', 7 },
-  { '1', 4 },
+  { '1', 5 },
 };
 
 // Extra hardware RX memory for the high-rate HUB stream on Teensy 4.1.

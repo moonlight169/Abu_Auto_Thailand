@@ -21,7 +21,7 @@
 //
 //  Layers 1-3 live here on purpose. They must NOT move into
 //  startMissionByCode(), because the Hub buttons call that with names like
-//  "MISSION 1", which is neither all digits nor 4/7 characters long.
+//  "MISSION 1", which is neither all digits nor 5/7 characters long.
 // ---------------------------------------------------------------------------
 
 void beginButtonSerial();

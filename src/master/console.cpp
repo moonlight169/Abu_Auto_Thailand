@@ -73,7 +73,7 @@ void printHelp()
   Serial.println("               pulse gripper open");
   Serial.println("SW_G (green) : not used");
   Serial.println("--- keypad panel (Serial3) ---");
-  Serial.println("Mode 0 -> 7 digits e.g. 0120011, Mode 1 -> 4 digits e.g. 1130");
+  Serial.println("Mode 0 -> 7 digits e.g. 0120011, Mode 1 -> 5 digits e.g. 11023");
   Serial.println("Sent 5x per press; the Master votes over 150 ms, then runs it.");
   Serial.println("Number is wheel RPM, maximum 420 RPM.");
   Serial.println("Legacy a-h commands read the LAST letter of the line.");

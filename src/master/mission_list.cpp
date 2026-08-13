@@ -149,7 +149,11 @@ const MissionStep mission2[] =
 //  master ไม่แกะความหมายของหลักไหนเลย มันแค่ strcmp ชื่อกับรหัสที่รับมา
 //
 //    Mode 0 : mode(0) + field(0=BLUE,1=RED) + line(1..3) + box(4 หลัก 0/1)
-//    Mode 1 : mode(1) + field(0=BLUE,1=RED) + row(1..3)  + step(0,2,3)
+//    Mode 1 : mode(1) + field(0=BLUE,1=RED) + step(0,2,3) + row(1..3) + row
+//
+//  หลักที่ 5 ของ Mode 1 ขึ้นกับ step:  step 0 = ทำทุก step เลือกได้ 2 แถว
+//  (หลัก 4 กับ 5 เป็นแถว ซ้ำแถวเดิมได้ เช่น 11022)  ส่วน step 2/3 เลือกแถวเดียว
+//  ที่หลัก 4 แล้วหลัก 5 เป็น 0 ตายตัว
 //
 //  ทุกอันเป็นโครงเปล่า RESET -> END รอเติมของจริง เติมได้เลยไม่ต้องแก้ที่อื่น
 //  ตราบใดที่ยังไม่เปลี่ยนชื่อ  ห้ามแทรกอันใหม่ไว้หน้า exMission/MISSION 1/2
@@ -1094,121 +1098,193 @@ const MissionStep p0131111[] =
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 1 ----------------------------
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Step 0 (ALL, two rows) ----------------------------
 
-const MissionStep p1010[] =
+const MissionStep p10011[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1012[] =
+const MissionStep p10012[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1013[] =
+const MissionStep p10013[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 2 ----------------------------
-
-const MissionStep p1020[] =
+const MissionStep p10021[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1022[] =
+const MissionStep p10022[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1023[] =
+const MissionStep p10023[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 0 (BLUE) | Row 3 ----------------------------
-
-const MissionStep p1030[] =
+const MissionStep p10031[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1032[] =
+const MissionStep p10032[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1033[] =
+const MissionStep p10033[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 1 (RED) | Row 1 ----------------------------
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Step 2 (one row) ----------------------------
 
-const MissionStep p1110[] =
+const MissionStep p10210[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1112[] =
+const MissionStep p10220[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1113[] =
+const MissionStep p10230[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 1 (RED) | Row 2 ----------------------------
+// ---------------------------- Mode 1 | Field 0 (BLUE) | Step 3 (one row) ----------------------------
 
-const MissionStep p1120[] =
+const MissionStep p10310[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1122[] =
+const MissionStep p10320[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1123[] =
+const MissionStep p10330[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-// ---------------------------- Mode 1 | Field 1 (RED) | Row 3 ----------------------------
+// ---------------------------- Mode 1 | Field 1 (RED) | Step 0 (ALL, two rows) ----------------------------
 
-const MissionStep p1130[] =
+const MissionStep p11011[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1132[] =
+const MissionStep p11012[] =
 {
   RESET_STEP(),
   END_STEP()
 };
 
-const MissionStep p1133[] =
+const MissionStep p11013[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11021[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11022[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11023[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11031[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11032[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11033[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 1 (RED) | Step 2 (one row) ----------------------------
+
+const MissionStep p11210[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11220[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11230[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+// ---------------------------- Mode 1 | Field 1 (RED) | Step 3 (one row) ----------------------------
+
+const MissionStep p11310[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11320[] =
+{
+  RESET_STEP(),
+  END_STEP()
+};
+
+const MissionStep p11330[] =
 {
   RESET_STEP(),
   END_STEP()
@@ -1330,35 +1406,47 @@ const MissionProgram missionPrograms[] =
   { "0131110", p0131110, ARRAY_COUNT(p0131110) },
   { "0131111", p0131111, ARRAY_COUNT(p0131111) },
 
-  // ---- Mode 1 | Field 0 (BLUE) | Row 1 ----
-  { "1010", p1010, ARRAY_COUNT(p1010) },
-  { "1012", p1012, ARRAY_COUNT(p1012) },
-  { "1013", p1013, ARRAY_COUNT(p1013) },
+  // ---- Mode 1 | Field 0 (BLUE) | Step 0 (ALL, two rows) ----
+  { "10011", p10011, ARRAY_COUNT(p10011) },
+  { "10012", p10012, ARRAY_COUNT(p10012) },
+  { "10013", p10013, ARRAY_COUNT(p10013) },
+  { "10021", p10021, ARRAY_COUNT(p10021) },
+  { "10022", p10022, ARRAY_COUNT(p10022) },
+  { "10023", p10023, ARRAY_COUNT(p10023) },
+  { "10031", p10031, ARRAY_COUNT(p10031) },
+  { "10032", p10032, ARRAY_COUNT(p10032) },
+  { "10033", p10033, ARRAY_COUNT(p10033) },
 
-  // ---- Mode 1 | Field 0 (BLUE) | Row 2 ----
-  { "1020", p1020, ARRAY_COUNT(p1020) },
-  { "1022", p1022, ARRAY_COUNT(p1022) },
-  { "1023", p1023, ARRAY_COUNT(p1023) },
+  // ---- Mode 1 | Field 0 (BLUE) | Step 2 (one row) ----
+  { "10210", p10210, ARRAY_COUNT(p10210) },
+  { "10220", p10220, ARRAY_COUNT(p10220) },
+  { "10230", p10230, ARRAY_COUNT(p10230) },
 
-  // ---- Mode 1 | Field 0 (BLUE) | Row 3 ----
-  { "1030", p1030, ARRAY_COUNT(p1030) },
-  { "1032", p1032, ARRAY_COUNT(p1032) },
-  { "1033", p1033, ARRAY_COUNT(p1033) },
+  // ---- Mode 1 | Field 0 (BLUE) | Step 3 (one row) ----
+  { "10310", p10310, ARRAY_COUNT(p10310) },
+  { "10320", p10320, ARRAY_COUNT(p10320) },
+  { "10330", p10330, ARRAY_COUNT(p10330) },
 
-  // ---- Mode 1 | Field 1 (RED) | Row 1 ----
-  { "1110", p1110, ARRAY_COUNT(p1110) },
-  { "1112", p1112, ARRAY_COUNT(p1112) },
-  { "1113", p1113, ARRAY_COUNT(p1113) },
+  // ---- Mode 1 | Field 1 (RED) | Step 0 (ALL, two rows) ----
+  { "11011", p11011, ARRAY_COUNT(p11011) },
+  { "11012", p11012, ARRAY_COUNT(p11012) },
+  { "11013", p11013, ARRAY_COUNT(p11013) },
+  { "11021", p11021, ARRAY_COUNT(p11021) },
+  { "11022", p11022, ARRAY_COUNT(p11022) },
+  { "11023", p11023, ARRAY_COUNT(p11023) },
+  { "11031", p11031, ARRAY_COUNT(p11031) },
+  { "11032", p11032, ARRAY_COUNT(p11032) },
+  { "11033", p11033, ARRAY_COUNT(p11033) },
 
-  // ---- Mode 1 | Field 1 (RED) | Row 2 ----
-  { "1120", p1120, ARRAY_COUNT(p1120) },
-  { "1122", p1122, ARRAY_COUNT(p1122) },
-  { "1123", p1123, ARRAY_COUNT(p1123) },
+  // ---- Mode 1 | Field 1 (RED) | Step 2 (one row) ----
+  { "11210", p11210, ARRAY_COUNT(p11210) },
+  { "11220", p11220, ARRAY_COUNT(p11220) },
+  { "11230", p11230, ARRAY_COUNT(p11230) },
 
-  // ---- Mode 1 | Field 1 (RED) | Row 3 ----
-  { "1130", p1130, ARRAY_COUNT(p1130) },
-  { "1132", p1132, ARRAY_COUNT(p1132) },
-  { "1133", p1133, ARRAY_COUNT(p1133) },
+  // ---- Mode 1 | Field 1 (RED) | Step 3 (one row) ----
+  { "11310", p11310, ARRAY_COUNT(p11310) },
+  { "11320", p11320, ARRAY_COUNT(p11320) },
+  { "11330", p11330, ARRAY_COUNT(p11330) },
 };
 
 const size_t MISSION_PROGRAM_COUNT = ARRAY_COUNT(missionPrograms);
@@ -1390,7 +1478,7 @@ bool checkMissionNamesUnique()
 
   // A duplicated name is invisible to the compiler and the first entry always
   // wins the lookup, so the wrong mission would run with no warning at all.
-  // Comparing every pair once is ~6800 strcmp for 117 entries: a few ms, once.
+  // Comparing every pair once is ~8300 strcmp for 129 entries: a few ms, once.
   for (size_t i = 0; i < MISSION_PROGRAM_COUNT; i++)
   {
     for (size_t j = i + 1; j < MISSION_PROGRAM_COUNT; j++)
