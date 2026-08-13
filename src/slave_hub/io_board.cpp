@@ -85,7 +85,10 @@ void initializeIoBoard() {
   pinMode(relay2, OUTPUT);
   pinMode(relay3, OUTPUT);
   pinMode(relay4, OUTPUT);
-  setAllRelays(false);
+  setRelay(1, 0);
+  setRelay(2, 1);
+  setRelay(3, 1);
+  setRelay(4, 0);
 
   initializeInputs();
   armServo.attach(arm_servo);

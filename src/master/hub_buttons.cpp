@@ -56,8 +56,8 @@ static void onSwitchYellow()
   resetGyroYaw();
 
   setHubRelay(1, 0);
-  setHubRelay(2, 1);
-  setHubRelay(3, 1);
+  setHubRelay(2, 0);
+  setHubRelay(3, 0);
 
   setHubArm(5);
   setHubSpin(0);
