@@ -102,6 +102,11 @@ constexpr float MOVE_SLIDE_AFTERLIMIT_BLUE = 0.1;
 constexpr float MOVE_YAW_AFTERLIMIT_BLUE = 0.0;
 constexpr float MOVE_SPEED_AFTERLIMIT_BLUE = 0.5;
 
+constexpr float MOVE_FORWARD_AFTERLIMIT_RED = 0.1;
+constexpr float MOVE_SLIDE_AFTERLIMIT_RED = -0.1;
+constexpr float MOVE_YAW_AFTERLIMIT_RED = 0.0;
+constexpr float MOVE_SPEED_AFTERLIMIT_RED = 0.5;
+
 // FIELD BLUE LINE 1
 constexpr float MOVE_START_FORWARD_L1_BLUE = 3.8;
 constexpr float MOVE_START_SLIDE_L1_BLUE = 2.9;
@@ -180,3 +185,82 @@ constexpr float MOVE_RAMP_FORWARD_L3_BLUE = 3.0;
 constexpr float MOVE_RAMP_SLIDE_L3_BLUE = 3.6;
 constexpr float MOVE_RAMP_YAW_L3_BLUE = 0.0;
 constexpr float MOVE_RAMP_SPEED_L3_BLUE = 1.0;
+
+// FIELD RED LINE 1
+constexpr float MOVE_START_FORWARD_L1_RED = 3.8;
+constexpr float MOVE_START_SLIDE_L1_RED = -2.9;
+constexpr float MOVE_START_YAW_L1_RED = 0.0;
+constexpr float MOVE_START_SPEED_L1_RED = 1.0;
+
+constexpr float MOVE_START_FORWARD_L1_NOLIDAR_RED = 4.0;
+constexpr float MOVE_START_SLIDE_L1_NOLIDAR_RED = -3.0;
+constexpr float MOVE_START_YAW_L1_NOLIDAR_RED = 0.0;
+constexpr float MOVE_START_SPEED_L1_NOLIDAR_RED = 1.0;
+
+constexpr float MOVE_SETUP_FORWARD_L1_RED = -0.4;
+constexpr float MOVE_SETUP_SLIDE_L1_RED = 0.0;
+constexpr float MOVE_SETUP_YAW_L1_RED = 0.0;
+constexpr float MOVE_SETUP_SPEED_L1_RED = 1.0;
+
+constexpr float MOVE_STANDBY_FORWARD_L1_RED = -0.4;
+constexpr float MOVE_STANDBY_SLIDE_L1_RED = -1.2;
+constexpr float MOVE_STANDBY_YAW_L1_RED = 0.0;
+constexpr float MOVE_STANDBY_SPEED_L1_RED = 1.0;
+
+constexpr float MOVE_RAMP_FORWARD_L1_RED = 3.0;
+constexpr float MOVE_RAMP_SLIDE_L1_RED = -1.2;
+constexpr float MOVE_RAMP_YAW_L1_RED = 0.0;
+constexpr float MOVE_RAMP_SPEED_L1_RED = 1.0;
+
+// FIELD RED LINE 2
+constexpr float MOVE_START_FORWARD_L2_RED = 3.8;
+constexpr float MOVE_START_SLIDE_L2_RED = -1.7;
+constexpr float MOVE_START_YAW_L2_RED = 0.0;
+constexpr float MOVE_START_SPEED_L2_RED = 1.0;
+
+constexpr float MOVE_START_FORWARD_L2_NOLIDAR_RED = 4.0;
+constexpr float MOVE_START_SLIDE_L2_NOLIDAR_RED = -1.8;
+constexpr float MOVE_START_YAW_L2_NOLIDAR_RED = 0.0;
+constexpr float MOVE_START_SPEED_L2_NOLIDAR_RED = 1.0;
+
+constexpr float MOVE_SETUP_FORWARD_L2_RED = -0.4;
+constexpr float MOVE_SETUP_SLIDE_L2_RED = 0.0;
+constexpr float MOVE_SETUP_YAW_L2_RED = 0.0;
+constexpr float MOVE_SETUP_SPEED_L2_RED = 1.0;
+
+constexpr float MOVE_STANDBY_FORWARD_L2_RED = -0.4;
+constexpr float MOVE_STANDBY_SLIDE_L2_RED = -2.4;
+constexpr float MOVE_STANDBY_YAW_L2_RED = 0.0;
+constexpr float MOVE_STANDBY_SPEED_L2_RED = 1.0;
+
+constexpr float MOVE_RAMP_FORWARD_L2_RED = 3.0;
+constexpr float MOVE_RAMP_SLIDE_L2_RED = -2.4;
+constexpr float MOVE_RAMP_YAW_L2_RED = 0.0;
+constexpr float MOVE_RAMP_SPEED_L2_RED = 1.0;
+
+
+// FIELD RED LINE 3
+constexpr float MOVE_START_FORWARD_L3_RED = 3.8;
+constexpr float MOVE_START_SLIDE_L3_RED = -0.5;
+constexpr float MOVE_START_YAW_L3_RED = 0.0;
+constexpr float MOVE_START_SPEED_L3_RED = 1.0;
+
+constexpr float MOVE_START_FORWARD_L3_NOLIDAR_RED = 4.0;
+constexpr float MOVE_START_SLIDE_L3_NOLIDAR_RED = -0.6;
+constexpr float MOVE_START_YAW_L3_NOLIDAR_RED = 0.0;
+constexpr float MOVE_START_SPEED_L3_NOLIDAR_RED = 1.0;
+
+constexpr float MOVE_SETUP_FORWARD_L3_RED = -0.4;
+constexpr float MOVE_SETUP_SLIDE_L3_RED = 0.0;
+constexpr float MOVE_SETUP_YAW_L3_RED = 0.0;
+constexpr float MOVE_SETUP_SPEED_L3_RED = 1.0;
+
+constexpr float MOVE_STANDBY_FORWARD_L3_RED = -0.4;
+constexpr float MOVE_STANDBY_SLIDE_L3_RED = -3.6;
+constexpr float MOVE_STANDBY_YAW_L3_RED = 0.0;
+constexpr float MOVE_STANDBY_SPEED_L3_RED = 1.0;
+
+constexpr float MOVE_RAMP_FORWARD_L3_RED = 3.0;
+constexpr float MOVE_RAMP_SLIDE_L3_RED = -3.6;
+constexpr float MOVE_RAMP_YAW_L3_RED = 0.0;
+constexpr float MOVE_RAMP_SPEED_L3_RED = 1.0;
