@@ -51,12 +51,46 @@ constexpr int32_t LIFT_ZERO = 0;
 constexpr int32_t TIMEOUT_LIDAR = 30000;
 constexpr int32_t DISTANCE_LIDAR = 385;
 
+constexpr float MOVE_FORWARD_BEFORELIDAR_BLUE = 0.4;
+constexpr float MOVE_SLIDE_BEFORELIDAR_BLUE = 0.0;
+constexpr float MOVE_YAW_BEFORELIDAR_BLUE = 0.0;
+constexpr float MOVE_SPEED_BEFORELIDAR_BLUE = 0.5;
+
+constexpr float MOVE_FORWARD_BEFORELIDAR_RED = 0.4;
+constexpr float MOVE_SLIDE_BEFORELIDAR_RED = 0.0;
+constexpr float MOVE_YAW_BEFORELIDAR_RED = 0.0;
+constexpr float MOVE_SPEED_BEFORELIDAR_RED = 0.5;
+
 //-----------------------------------------
 
+constexpr int32_t RELAY_ARM = 1;
 constexpr int32_t RELAY1_ON = 1;
 constexpr int32_t RELAY1_OFF = 0;
 
+constexpr int32_t RELAY_FRONT = 2;
+constexpr int32_t RELAY2_ON = 0;
+constexpr int32_t RELAY2_OFF = 1;
+
+constexpr int32_t RELAY_BACK = 3;
+constexpr int32_t RELAY3_ON = 0;
+constexpr int32_t RELAY3_OFF = 1;
+
 constexpr uint32_t WAIT_STEP_MS = 500;
+
+//-----------------------------------------
+
+constexpr int32_t ARM_MIDDLE_DEG = 100;
+
+constexpr int32_t ARM_FRONT_UP_DEG = 25;
+constexpr int32_t ARM_FRONT_DOWN_DEG = 30;
+
+constexpr int32_t ARM_BACK_UP_DEG = 175;
+constexpr int32_t ARM_BACK_DOWN_DEG = 180;
+
+constexpr int32_t BOTTOM_MIDDLE_DEG = 90;
+
+constexpr int32_t BOTTOM_FRONT_DEG = 5;
+constexpr int32_t BOTTOM_BACK_DEG = 180;
 
 //-----------------------------------------
 
