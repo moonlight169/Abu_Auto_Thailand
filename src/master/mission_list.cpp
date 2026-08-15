@@ -499,6 +499,7 @@ const MissionStep p0010011[] =
   ARM_TOP_STEP(ARM_MIDDLE_DEG),
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_OFF),
   WAIT_STEP(WAIT_STEP_MS),
+  ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
 
   //----------------------------------------------------------
 
@@ -1282,6 +1283,7 @@ const MissionStep p0110011[] =
   ARM_TOP_STEP(ARM_MIDDLE_DEG),
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_OFF),
   WAIT_STEP(WAIT_STEP_MS),
+  ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
 
   //----------------------------------------------------------
 
