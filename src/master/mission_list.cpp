@@ -286,8 +286,6 @@ const MissionStep p0010001[] =
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
-  //----------------------------------------------------------
-
   LASER4_FORWARD_STEP(FORWARD_SPEED_LASER4, TIMEOUT_LASER4),
   LIFT_STEP(LIFT_START_FRONT, LIFT_START_BACK),
   RESET_STEP_2(),
@@ -297,6 +295,7 @@ const MissionStep p0010001[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -376,6 +375,7 @@ const MissionStep p0010010[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -464,6 +464,7 @@ const MissionStep p0010011[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -488,6 +489,7 @@ const MissionStep p0010011[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_BACK_DEG),
@@ -1076,6 +1078,7 @@ const MissionStep p0110001[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -1155,6 +1158,7 @@ const MissionStep p0110010[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -1243,6 +1247,7 @@ const MissionStep p0110011[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_FRONT_DEG),
@@ -1267,6 +1272,7 @@ const MissionStep p0110011[] =
   //----------------------------------------------------------
 
   LIDAR_PARK_STEP(DISTANCE_LIDAR, TIMEOUT_LIDAR),
+  
   HUB_RELAY_STEP(RELAY_ARM, RELAY1_ON),
   WAIT_STEP(WAIT_STEP_MS),
   ARM_BOTTOM_STEP(BOTTOM_BACK_DEG),
