@@ -546,7 +546,7 @@ const MissionStep p0010100[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -640,7 +640,7 @@ const MissionStep p0010101[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -752,7 +752,7 @@ const MissionStep p0010110[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -859,7 +859,7 @@ const MissionStep p0010111[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -1415,7 +1415,7 @@ const MissionStep p0011100[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -1525,7 +1525,7 @@ const MissionStep p0011101[] =
 
   //----------------------------------------------------------
   
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -1652,7 +1652,7 @@ const MissionStep p0011110[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -1774,7 +1774,7 @@ const MissionStep p0011111[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -2612,7 +2612,7 @@ const MissionStep p0110100[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -2706,7 +2706,7 @@ const MissionStep p0110101[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -2818,7 +2818,7 @@ const MissionStep p0110110[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -2925,7 +2925,7 @@ const MissionStep p0110111[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -3481,7 +3481,7 @@ const MissionStep p0111100[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -3591,7 +3591,7 @@ const MissionStep p0111101[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -3718,7 +3718,7 @@ const MissionStep p0111110[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
@@ -3840,7 +3840,7 @@ const MissionStep p0111111[] =
 
   //----------------------------------------------------------
 
-  LIFT_STEP(LIFT_ZERO, LIFT_LV2_BACK),
+  LIFT_STEP(LIFT_ZERO, LIFT_LV3_BACK),
   LASER3_FORWARD_STEP(FORWARD_SPEED_LASER3, TIMEOUT_LASER3),
   LIFT_STEP(LIFT_ZERO, LIFT_ZERO),
 
