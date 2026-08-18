@@ -112,7 +112,7 @@ const MissionStep mission1[] =
   WAIT_STEP(1000),
   HUB_SPIN_STEP(133),
   WAIT_STEP(1000),
-  LDR1_WAIT_STEP(0),       
+  HUB_WAIT_INPUT_STEP(HUB_LDR1, 1, 0),    
   HUB_RELAY_STEP(4, 1),
   END_STEP()
 };
@@ -135,7 +135,7 @@ const MissionStep mission2[] =
   WAIT_STEP(1000),
   HUB_SPIN_STEP(133),
   WAIT_STEP(1000),
-  LDR1_WAIT_STEP(0),     
+  HUB_WAIT_INPUT_STEP(HUB_LDR1, 1, 0),    
   HUB_RELAY_STEP(4, 1),
   END_STEP()
 };
