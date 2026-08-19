@@ -33,7 +33,7 @@ constexpr int32_t LIFT_START_BACK = 200;
 constexpr int32_t LIFT_DOWN_FRONT = 100; 
 constexpr int32_t LIFT_DOWN_BACK = 200;
 
-constexpr uint32_t WAIT_LIFT_LEVEL_MS = 200;
+constexpr uint32_t WAIT_LIFT_LEVEL_MS = 100;
 
 constexpr int32_t LIFT_LV1_FRONT = 1000;
 constexpr int32_t LIFT_LV1_BACK = 1100;
@@ -75,7 +75,7 @@ constexpr int32_t RELAY_BACK = 3;
 constexpr int32_t RELAY3_ON = 0;
 constexpr int32_t RELAY3_OFF = 1;
 
-constexpr uint32_t WAIT_STEP_MS = 500;
+constexpr uint32_t WAIT_STEP_MS = 100;
 
 //-----------------------------------------
 
