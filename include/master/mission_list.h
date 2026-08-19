@@ -309,7 +309,7 @@ constexpr int32_t ARM_PLACE_FRONT_LV2_DEG = 80;
 constexpr int32_t ARM_PLACE_BACK_LV2_DEG = 120;
 
 constexpr int32_t ARM_PUSH_FRONT_LV2_DEG = 70;
-constexpr int32_t ARM_PUSH_BACK_LV2_DEG = 120;
+constexpr int32_t ARM_PUSH_BACK_LV2_DEG = 130;
 
 constexpr int32_t ARM_WAIT_PLACE_FRONT_LV3_DEG = 110;
 constexpr int32_t ARM_WAIT_PLACE_BACK_LV3_DEG = 90;
