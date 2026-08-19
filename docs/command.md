@@ -81,8 +81,9 @@ Mode 1 หลักที่ 5 ขึ้นกับ step — `step 0` = ทำ�
 | `UNKNOWN MISSION CODE: [0120011]` | **สายดี รหัสถูก** แต่ยังไม่มีภารกิจชื่อนี้ในทะเบียน |
 | `MISSION ALREADY RUNNING` | มีภารกิจรันอยู่ ต้อง `A` หรือ SW_Yellow ก่อน |
 
-⚠ ตอนนี้บอร์ดคีย์แพดยังส่ง `A1`..`B8` ที่ 921600 อยู่ ยังไม่ตรงกับที่ Master รอ (ตัวเลขล้วน
-ที่ 115200) — เสียบแล้วจะเห็น `BAD CODE (NOT DIGITS)` หรือขยะ ใช้ `K` ทดสอบไปก่อนได้
+บอร์ดคีย์แพดส่งตัวเลขล้วนที่ 115200 ตรงกับที่ Master รอแล้ว ถ้ายังเห็น
+`BAD CODE (NOT DIGITS)` หรือขยะ แปลว่าบอร์ดยังไม่ได้แฟลชเฟิร์มแวร์ตัวใหม่
+หรือสาย TX/RX สลับ / GND ไม่ร่วม — ทดสอบฝั่ง Master แยกได้ด้วยคำสั่ง `K`
 
 ### เคลื่อนที่
 
@@ -332,25 +333,32 @@ Master ก็ส่งอันนั้นได้
 บอร์ดนี้**ไม่รับคำสั่งใด ๆ** เปิดมอนิเตอร์ได้อย่างเดียวเพื่อดู log
 
 ```
-=== F103 Keypad Echo ===
-Press key -> show A1-A8/B1-B8 on OLED -> send text to Teensy
-Each press sends the label 5x, 20 ms apart, on Serial1.
-This board takes no console commands; it only reports keys.
-[KEY] A4 x5
+=== F103 Mission Keypad ===
+Enter code via keypad, press 16=START to send on Serial1.
+This board takes no console commands; it only reports codes.
+[KEY] Mission keypad init OK
+[KEY] #13 page=2
+[KEY] #4 page=3
+[SEND] 10012 x5
 ```
 
-`x5` คือส่ง label ซ้ำ 5 บรรทัด ห่างกัน 20 ms ออก `Serial1` ไปหา Master
+`[KEY] #n page=p` ออกทุกครั้งที่กดปุ่ม (n = เลขปุ่ม 1..16, p = หน้าเมนูหลังกด
+โดย 0=MODE 1=FIELD 2=SEL3 3=SEL4 4=RECHECK 5=SENT)
+ส่วน `[SEND] <รหัส> x5` ออกเฉพาะตอนกด 16 = START ที่หน้า RECHECK เท่านั้น —
+ส่งซ้ำ 5 บรรทัด ห่างกัน 20 ms ออก `Serial1` ไปหา Master
 
-**ฝั่ง Master อ่าน `Serial3` แล้ว** (`src/master/button_link.cpp`) แต่ยังคุยกันไม่รู้เรื่อง
-เพราะบอร์ดนี้ยังเป็นของเดิม — ต้องแก้ 2 จุดถึงจะครบวง:
+log พวกนี้ออกทาง **USB CDC** ไม่ใช่สายที่ต่อ Master — `platformio.ini` เซ็ต
+`ENABLE_HWSERIAL1` + `PIN_SERIAL1_TX=PA9` แยก `Serial1` ออกจาก `Serial` ให้แล้ว
+เปิดมอนิเตอร์ดูได้โดยไม่มีข้อความ debug หลุดลงลิงก์
 
-| | Master รอ | บอร์ดนี้ส่งจริง | แก้ที่ |
-|---|---|---|---|
-| baud | 115200 | 921600 | `F103_SERIAL_BAUD` ใน `include/slave_button/config.h` |
-| payload | ตัวเลขล้วน 5/7 หลัก | `A1`..`B8` | `src/slave_button/forest_menu.cpp` |
+| | ค่า |
+|---|---|
+| baud ทั้งสองฝั่ง | 115200 (`F103_SERIAL_BAUD` = `BUTTON_BAUD`) |
+| payload | ตัวเลขล้วน 5 หรือ 7 หลัก + `\n` |
+| รหัสที่กดได้ | 126 อัน ตรงกับทะเบียนฝั่ง Master แบบ 1:1 |
 
-จังหวะส่ง 5 ครั้ง × 20 ms **ตรงกับที่ Master ออกแบบไว้แล้ว** ไม่ต้องแตะ
-ระหว่างนี้ทดสอบฝั่ง Master ได้ด้วยคำสั่ง `K<รหัส>` บนคอนโซล master
+ทดสอบฝั่ง Master แยกจากบอร์ดนี้ได้ด้วยคำสั่ง `K<รหัส>` บนคอนโซล master
+ซึ่งวิ่งผ่านตัวกรองและระบบโหวตชุดเดียวกันเป๊ะ
 
 ---
 

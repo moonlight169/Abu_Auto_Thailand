@@ -16,32 +16,33 @@ slave_hub    (Teensy 4.1)  <--UART 460800--> |
 slave_wheel  (Blackpill)   <--UART 115200--> | Master (Teensy 4.1)
 slave_arm    (Blackpill)   <--UART 115200--> |
 slave_lift   (Blackpill)   <--UART 115200--> |
-slave_button (Blue Pill)   ---UART 921600--> |  ⚠ master รอที่ 115200
+slave_button (Blue Pill)   ---UART 115200--> |
                                              +--- I2C 400kHz --- BNO085 IMU
 ```
 
 RPLiDAR และ TFMini-S ทั้ง 4 ตัวไม่ได้ต่อกับ Master โดยตรง แต่ต่อเข้า `slave_hub`
 ซึ่งประมวลผลสแกนให้เสร็จแล้วส่งผลลัพธ์กล่อง/กำแพงมาให้ Master ในแพ็กเก็ตเดียว
 
-### ⚠ สถานะลิงก์ `slave_button` — ฝั่ง Master เสร็จแล้ว ฝั่งบอร์ดยังไม่แก้
+### ลิงก์ `slave_button` — ครบวงแล้ว
 
-ฝั่ง Master ทำเสร็จแล้ว (`src/master/button_link.cpp` อ่าน `Serial3`, กรอง, โหวต,
-เริ่มภารกิจตามชื่อ) แต่ **ฝั่งบอร์ดคีย์แพดยังเป็นของเดิมทุกบรรทัด** จึงยังคุยกันไม่ได้
-เพราะไม่ตรงกัน 2 จุด:
+บอร์ดคีย์แพดประกอบรหัสภารกิจเองแล้วยิงออก `Serial1` ที่ 115200 ตรงกับ `BUTTON_BAUD`
+ฝั่ง Master (`src/master/button_link.cpp`) อ่าน `Serial3` → กรอง 4 ชั้น → โหวต 150 ms
+→ `startMissionByCode()` ครบวงแล้วทั้งสองฝั่ง
 
-| | Master รอ | บอร์ดคีย์แพดส่งจริงตอนนี้ | แก้ที่ |
-|---|---|---|---|
-| baud | 115200 (`BUTTON_BAUD`) | **921600** (`F103_SERIAL_BAUD`) | `include/slave_button/config.h` |
-| payload | ตัวเลขล้วน `0120011` / `11023` | **`A1`..`A8` / `B1`..`B8`** | `src/slave_button/forest_menu.cpp` |
+| | ค่า |
+|---|---|
+| baud ทั้งสองฝั่ง | 115200 (`F103_SERIAL_BAUD` = `BUTTON_BAUD`) |
+| payload | ตัวเลขล้วน + `\n` เช่น `0120011` / `11023` |
+| จังหวะส่ง | 5 เฟรม ห่างกัน 20 ms (กินเวลา 80 ms) |
+| หน้าต่างโหวตฝั่ง Master | 150 ms — ครอบทั้ง 5 เฟรมพอดี |
+| รหัสที่กดได้ | 126 อัน ตรงกับทะเบียนฝั่ง Master แบบ 1:1 ไม่ขาดไม่เกิน |
 
-ถ้าแก้แค่ baud อย่างเดียว Master จะอ่านได้แต่ตีตกทุกบรรทัดที่ชั้น "ตัวเลขล้วน"
-แล้วขึ้น `SERIAL3 BAD CODE (NOT DIGITS): [A4]` — ต้องแก้ทั้งสองจุดถึงจะครบวง
+กด START แล้วภารกิจเริ่มใน **~150 ms** — ดีเลย์คือหน้าต่างโหวต ไม่ใช่ความหน่วงของสาย
+และหน้า SENT บนบอร์ดค้าง 900 ms ก่อนรับรหัสใหม่ได้ ยาวกว่าหน้าต่างโหวต
+สองรหัสจึงไม่มีทางปนกันในโหวตเดียว
 
-ส่วนที่ **ตรงกันแล้ว** คือจังหวะส่ง: บอร์ดส่งซ้ำ 5 ครั้งห่าง 20 ms ซึ่งเป็นค่าที่หน้าต่าง
-โหวต 150 ms ฝั่ง Master ออกแบบมารองรับพอดี — ข้อนี้ไม่ต้องแตะ
-
-ระหว่างที่ยังไม่แก้ ทดสอบเส้นทางทั้งหมดได้จาก Serial Monitor ด้วยคำสั่ง `K0120011`
-ซึ่งวิ่งผ่านตัวกรองและระบบโหวตชุดเดียวกันเป๊ะ
+ทดสอบเส้นทางฝั่ง Master โดยไม่ต้องมีบอร์ดคีย์แพดก็ยังทำได้ด้วยคำสั่ง `K0120011`
+บน Serial Monitor ซึ่งวิ่งผ่านตัวกรองและระบบโหวตชุดเดียวกันเป๊ะ
 
 ## 🛠️ Hardware & Tech Stack
 
@@ -64,7 +65,7 @@ PlatformIO ใช้ single project แยก 6 Environment ด้วย `build_
 │   ├── slave_arm/     # Blackpill: แขน 2 แกน encoder PID + homing ด้วย limit switch
 │   ├── slave_wheel/   # Blackpill: Mecanum 4 ล้อ speed PID
 │   ├── slave_lift/    # Blackpill: lift หน้า/หลัง position PID + soft down + homing
-│   └── slave_button/  # Blue Pill: คีย์แพด 4x4 + OLED, ยิง label ออก Serial1 ทางเดียว
+│   └── slave_button/  # Blue Pill: คีย์แพด 4x4 + OLED, ประกอบรหัสภารกิจแล้วยิงออก Serial1
 ├── include/
 │   ├── master/  slave_hub/  slave_arm/  slave_wheel/  slave_lift/  slave_button/
 │                       # header แยกต่อบอร์ด
@@ -153,33 +154,28 @@ encoder ของ lift นับบวก = ขึ้น, PWM ลบ = ขึ้
 | keypad column (OUTPUT, idle HIGH) | C1 PA2 / C2 PA3 / C3 PA0 / C4 PA1 |
 | keypad row (`INPUT_PULLUP`) | R1 PB0 / R2 PB1 / R3 PA6 / R4 PA7 |
 | ลิงก์ไป Master | `Serial1` TX PA9 → Teensy `Serial3` RX (pin 15) |
-| onboard LED | PC13 (active LOW, ยังไม่ได้ใช้ในโค้ด) |
-
-สแกนคีย์แพดโดยปล่อย column เป็น LOW ทีละเส้นแล้วอ่าน row — ปุ่มที่กดจะอ่านได้ LOW
-debounce 5 ms และนับเฉพาะขอบขาลง กดค้างไม่นับซ้ำ ปล่อยปุ่มไม่ส่งอะไร
-
-| | C1 | C2 | C3 | C4 |
-|---|---|---|---|---|
-| **R1** | A1 | A2 | A3 | A4 |
-| **R2** | A5 | A6 | A7 | A8 |
-| **R3** | B1 | B2 | B3 | B4 |
-| **R4** | B5 | B6 | B7 | B8 |
+| onboard LED | PC13 (active LOW — ติดตอนกด START ดับเมื่อออกจากหน้า SENT) |
 
 ค่า pin ทั้งหมดอยู่ใน `include/slave_button/config.h`
 
-**สิ่งที่ต้องแก้บนบอร์ดนี้เพื่อให้ลิงก์ครบวง:** เปลี่ยน label `A1`..`B8` เป็นรหัสภารกิจ
-ตัวเลขล้วนตามที่ Master รอ และลด `F103_SERIAL_BAUD` เป็น 115200
+สแกนคีย์แพดโดยปล่อย column เป็น LOW ทีละเส้นแล้วอ่าน row — ปุ่มที่กดจะอ่านได้ LOW
+debounce 18 ms และนับเฉพาะขอบขาลง กดค้างไม่นับซ้ำ ปล่อยปุ่มไม่ส่งอะไร
 
-บัฟเฟอร์ 2 ตัวที่เล็กเกินสำหรับรหัส 7 หลัก ต้องขยายด้วย:
+ปุ่มนับ 1..16 แบบ row-major (`key = row*4 + col + 1`):
 
-| ตัวแปร | ไฟล์ | ขนาดตอนนี้ | ต้องการ |
-|--------|------|-----------|---------|
-| `_label[4]` | `forest_menu.cpp` | พอสำหรับ `"A1"` | ≥ 8 |
-| `_txFrame[8]` | `main.cpp` | พอสำหรับ `"A1\n"` | ≥ 9 (รหัส 7 + `\n` + NUL) |
+| | C1 | C2 | C3 | C4 |
+|---|---|---|---|---|
+| **R1** | 1 = box `0` | 2 = box `1` | 3 = สลับโหมด | 4 = ENTER |
+| **R2** | 5 = step 3 | 6 = row 3 | 7 = line 3 | 8 = BLUE |
+| **R3** | 9 = step 2 | 10 = row 2 | 11 = line 2 | 12 = RED |
+| **R4** | 13 = step All | 14 = row 1 | 15 = line 1 | 16 = START |
 
-ถ้าไม่ขยาย `_txFrame` ก็ยังใช้งานได้ — `snprintf()` จะตัด `'\n'` ทิ้งแล้วส่ง NUL ออกไปแทน
-ซึ่งฝั่ง Master รับมือไว้แล้วโดยนับ `'\0'` เป็นตัวจบบรรทัดด้วย แต่ `_label` ต้องขยายแน่นอน
-ไม่งั้นรหัสจะโดนตัดตั้งแต่ต้นทาง
+เมนูเดิน 5 หน้า `MODE → FIELD → SEL3 → SEL4 → RECHECK` แล้วกด 16 = START ที่หน้าทวน
+จึงจะยิงรหัสออกไปจริง (`SEL3` = ป่า:LINE / ramp:STEP, `SEL4` = ป่า:BOX / ramp:ROW)
+กดปุ่มระหว่างเดินเมนูไม่ส่งอะไรออกสายเลย
+
+⚠ **หน้า RECHECK ยังไม่มีปุ่มยกเลิก** — ปุ่มทั้ง 16 ถูกจองหมดแล้วและหน้านี้ไม่มี timeout
+ถ้ากดผิดจนมาถึงหน้าทวน ทางออกมีแค่กด START ส่งรหัสผิดออกไป หรือถอดไฟบอร์ด
 
 ## 📡 Protocol
 
@@ -189,7 +185,7 @@ debounce 5 ms และนับเฉพาะขอบขาลง กดค�
 | hub | `R1 ON` `ARM 40` `SPIN 100` `MODE BOX` `MODE WALL` `STREAM ON` | `HUB,<ms>,<MODE>,<found>,<dist>,<offset>,<angle>,<width>,<points>,<inputMask>,<relayMask>,<arm>,<spin>,<tf1..tf4>,<tfValidMask>` ที่ 20 Hz |
 | arm | `CMD,<seq>,<HOME\|B,deg\|T,deg\|POS,b,t\|STATUS\|STOP\|CLEAR>` | `ACK` / `STATE` / `DONE` / `ERR` (ตอบพร้อม seq เดิม) |
 | lift | `LP,<front>,<back>` / `LZ` / `S` | `LIFT_POS,<front>,<back>` ที่ 50 Hz + `LIFT_BUSY` / `LIFT_REACHED,<f>,<b>` / `LIFT_HOMING` / `LIFT_HOME_REACHED` / `LIFT_ERROR,<reason>` |
-| button ⚠ | — (ทางเดียว) | รหัสภารกิจ + `\n` ตอนกดปุ่ม (บอร์ดยังส่ง `A1`..`B8` อยู่) |
+| button | — (ทางเดียว) | รหัสภารกิจตัวเลขล้วน + `\n` ยิง 5 เฟรมตอนกด START |
 
 ลิงก์ button เป็น plain text ล้วน ไม่มี framing/checksum เหมือนลิงก์อื่น
 การกด 1 ครั้งส่งซ้ำ **5 บรรทัด ห่างกัน 20 ms** เผื่อฝั่งรับพลาดรอบแรก
@@ -209,8 +205,9 @@ Master ไม่แกะความหมายของหลักไหน�
 ใน `missionPrograms[]` ตรง ๆ — ความหมายของแต่ละหลักอยู่ในคอมเมนต์ของ
 `src/master/mission_list.cpp` เท่านั้น
 
-**สถานะการเติมภารกิจ:** Mode 0 ครบแล้วทั้ง **96 รหัส** (2 สนาม × 3 เส้น × 16 รหัสกล่อง)
-ส่วน Mode 1 อีก **30 รหัส** ยังเป็นโครงเปล่า `RESET_STEP(), END_STEP()` รอเติม
+**สถานะการเติมภารกิจ:** เติมครบทั้ง **126 รหัส** แล้ว — Mode 0 **96 รหัส**
+(2 สนาม × 3 เส้น × 16 รหัสกล่อง) และ Mode 1 **30 รหัส** (2 สนาม × [step 0 เก้า +
+step 2 สาม + step 3 สาม]) ไม่เหลือโครงเปล่าแล้ว
 รายละเอียดโครงสร้างและกติกาการแก้อยู่ใน [docs/mission.md](docs/mission.md)
 
 ตัวกรอง 4 ชั้นก่อนภารกิจจะเริ่ม:
@@ -255,10 +252,10 @@ Blackpill และ Blue Pill ตั้งค่าไว้อัปโหล�
 ลำดับรายการในทะเบียนจึงไม่ทำให้ปุ่มไปเริ่มภารกิจผิด ตอนบูต Master จะเช็คชื่อซ้ำให้
 ครั้งหนึ่งแล้วพิมพ์ `MISSION REGISTRY OK: <n> UNIQUE NAMES`
 
-**แผงคีย์แพด (slave_button):** กดแล้วโชว์ label บน OLED 2 วินาทีแล้วกลับเป็น `-`
-พร้อมยิง text ออก `Serial1` — ฝั่ง Master พร้อมรับแล้ว แต่ยังสั่งงานไม่ได้จนกว่าจะแก้
-baud กับ payload บนบอร์ดคีย์แพด (ดูหัวข้อสถานะลิงก์ด้านบน)
-ทดสอบบอร์ดเองได้ที่ `pio device monitor -e slave_button` จะเห็น `[KEY] A4 x5` ทุกครั้งที่กด
+**แผงคีย์แพด (slave_button):** เดินเมนู 5 หน้าบน OLED แล้วกด 16 = START ที่หน้าทวน
+บอร์ดจะยิงรหัส 5 เฟรมออก `Serial1` แล้วโชว์หน้า SENT 900 ms ก่อนรีเซ็ตกลับหน้าแรกเอง
+ฝั่ง Master โหวต 150 ms แล้วเริ่มภารกิจ — กด START ถึงหุ่นขยับใช้เวลา ~150 ms
+ดู log ของบอร์ดเองได้ที่ `pio device monitor -e slave_button` จะเห็น `[SEND] 0120011 x5`
 
 **คำสั่งที่ใช้บ่อยบน Serial Monitor ของ master** (พิมพ์ `h` เพื่อดูทั้งหมด):
 
@@ -293,6 +290,14 @@ PID              โชว์ gain ปัจจุบัน
 ```
 
 บอร์ด lift พิมพ์ `POSE` อัตโนมัติทุก 500 ms และส่ง `LIFT_POS` ให้ Master ทุก 20 ms
+
+## 📚 เอกสารเพิ่มเติม
+
+| ไฟล์ | เนื้อหา |
+|------|---------|
+| [docs/mission.md](docs/mission.md) | ระบบลำดับภารกิจ: step ทั้งหมด, ทะเบียน, โครงของ Mode 0 / Mode 1, วิธีเพิ่มภารกิจใหม่ |
+| [docs/command.md](docs/command.md) | คำสั่ง Serial Monitor ของทุกบอร์ด + กับดักของแต่ละตัว |
+| [docs/problem.md](docs/problem.md) | ปัญหาที่ตรวจเจอจากการไล่โค้ดแล้วยังไม่ได้แก้ |
 
 ## 📄 License
 
