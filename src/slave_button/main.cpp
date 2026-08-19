@@ -24,27 +24,32 @@
 void setup() {
     Serial.begin(115200);
 
-    // Init keypad + OLED
+    // Init keypad + OLED state machine
     forest_menu_init();
 
-    // Init Serial1 directly to Teensy Serial3
-    // *** ฝั่ง Teensy ยังไม่มีโค้ดอ่านลิงก์นี้ — ตอนนี้ส่งออกไปลอย ๆ ***
+    // Init Serial1 -> Master Serial3 (baud ต้องแมตช์ BUTTON_BAUD = 115200)
     Serial1.begin(F103_SERIAL_BAUD);
 
-    delay(200);
-    Serial.println(F("=== F103 Keypad Echo ==="));
-    Serial.println(F("Press key -> show A1-A8/B1-B8 on OLED -> send text to Teensy"));
-    Serial.println(F("Each press sends the label 5x, 20 ms apart, on Serial1."));
-    Serial.println(F("This board takes no console commands; it only reports keys."));
+    // ไม่มี delay() ตามกฎเหล็กข้อ 4 — U8g2.begin() ใน forest_menu_init()
+    // จัดการ timing การ init จอเองแล้ว ไม่ต้องหน่วงเพิ่ม
+    Serial.println(F("=== F103 Mission Keypad ==="));
+    Serial.println(F("Enter code via keypad, press 16=START to send on Serial1."));
+    Serial.println(F("This board takes no console commands; it only reports codes."));
 }
 
 // ===== Repeat-send state =====
-// กด 1 ครั้ง -> ส่งซ้ำ REPEAT_COUNT ครั้ง ห่างกัน REPEAT_INTERVAL_MS
-// เผื่อฝั่ง Teensy พลาดรอบแรก (buffer เต็ม / ยังไม่ทัน sync)
+// กด START 1 ครั้ง -> ส่งซ้ำ REPEAT_COUNT ครั้ง ห่างกัน REPEAT_INTERVAL_MS
+// เผื่อฝั่ง Master พลาดรอบแรก (buffer เต็ม / ยังไม่ทัน sync) และให้ vote ทำงาน
+//
+// เฟรมแรกออกทันที ที่เหลืออีก 4 เฟรมห่างกัน 20ms -> ชุดหนึ่งกินเวลา 80ms
+// สั้นกว่า BUTTON_VOTE_WINDOW_MS = 150ms ฝั่ง Master ทั้ง 5 เฟรมจึงตกในโหวตเดียวกัน
+// และหน้า SENT ค้าง 900ms ก่อนจะรับรหัสใหม่ได้ -> โหวตรอบก่อนปิดไปแล้วเสมอ
+// สองรหัสจึงไม่มีทางปนกันในหน้าต่างโหวตเดียว
 #define REPEAT_COUNT        5
 #define REPEAT_INTERVAL_MS  20
 
-static char          _txFrame[8] = "";   // "A4\n" ที่กำลังส่งอยู่
+// รหัสยาวสุด 7 หลัก + '\n' + '\0' = 9 ไบต์ -> ใช้ 10 เผื่อกัน buffer overflow เด็ดขาด
+static char          _txFrame[10] = "";
 static uint8_t       _txFrameLen = 0;
 static uint8_t       _txLeft = 0;        // เหลือต้องส่งอีกกี่ครั้ง
 static unsigned long _txNextAt = 0;
@@ -52,19 +57,25 @@ static unsigned long _txNextAt = 0;
 void loop() {
     unsigned long now = millis();
 
-    // 1. Update keypad scan + OLED display
+    // 1. เดิน state machine (สแกนปุ่ม + อัปเดต OLED)
     forest_menu_update(now);
 
-    // 2. กดปุ่ม -> ตั้งคิวส่งซ้ำ (ปุ่มใหม่ยกเลิกคิวเก่าทิ้ง)
-    if (forest_menu_wasPressed()) {
-        const char* label = forest_menu_getLabel();
+    // 2. กด START -> ตั้งคิวส่งรหัสซ้ำ (ชุดใหม่ยกเลิกคิวเก่าทิ้ง)
+    if (forest_menu_hasCodeToSend()) {
+        const char* code = forest_menu_getCode();
 
-        _txFrameLen = (uint8_t)snprintf(_txFrame, sizeof(_txFrame), "%s\n", label);
+        // snprintf คืนความยาว "ก่อนถูกตัด" ไม่ใช่ที่เขียนจริง ถ้าวันไหนรหัสยาวเกินคาด
+        // ค่าที่ได้จะเกินบัฟเฟอร์ แล้ว write() ข้างล่างจะอ่านเลยท้ายอาร์เรย์ -> clamp ไว้ก่อน
+        int frameLen = snprintf(_txFrame, sizeof(_txFrame), "%s\n", code);
+        if (frameLen < 0) frameLen = 0;
+        if (frameLen > (int)sizeof(_txFrame) - 1) frameLen = (int)sizeof(_txFrame) - 1;
+
+        _txFrameLen = (uint8_t)frameLen;
         _txLeft = REPEAT_COUNT;
         _txNextAt = now;   // ส่งครั้งแรกทันทีในรอบนี้
 
-        Serial.print(F("[KEY] "));
-        Serial.print(label);
+        Serial.print(F("[SEND] "));
+        Serial.print(code);
         Serial.print(F(" x"));
         Serial.println(REPEAT_COUNT);
     }

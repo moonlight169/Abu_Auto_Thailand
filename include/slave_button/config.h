@@ -19,9 +19,9 @@
 //
 // ===== Serial to Teensy =====
 // F103 uses hardware Serial1 (PA9=TX, PA10=RX)
-// NOTE: ฝั่ง master ยังไม่มีโค้ดอ่านลิงก์นี้ ค่า baud จึงยังไม่ผูกกับใคร
-//       สลาฟตัวอื่น (wheel/arm/lift) ใช้ 115200 — ถ้าจะให้เหมือนกันค่อยลดตอนเขียนฝั่ง master
-#define F103_SERIAL_BAUD 921600
+// ต้องแมตช์ Master Serial3 (BUTTON_BAUD = 115200) — ฝั่ง master อ่านลิงก์นี้แล้ว
+// ผ่าน readButtonSerial() -> vote 150ms -> startMissionByCode()
+#define F103_SERIAL_BAUD 115200
 
 // ===== OLED 1.3" SH1106 128x64 (Software I2C using U8g2) =====
 #define OLED_SOFT_SCL PB10
