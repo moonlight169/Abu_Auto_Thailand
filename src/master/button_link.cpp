@@ -220,9 +220,10 @@ void readButtonSerial()
   {
     const char received = (char)Serial3.read();
 
-    // '\0' counts as a terminator as well as '\n' and '\r': the keypad's
-    // current TX buffer is one byte too small for a 7-digit code, so its
-    // snprintf() drops the '\n' and sends the NUL that took its place.
+    // '\0' counts as a terminator as well as '\n' and '\r'. The keypad
+    // sends a real newline now that its TX buffer fits a 7-digit code plus
+    // the '\n', so the NUL case is belt and braces. Keep it: a truncated
+    // snprintf() on that board would silently put a NUL where the newline was.
     if (received == '\n' || received == '\r' || received == '\0')
     {
       if (buttonRxDiscard)
