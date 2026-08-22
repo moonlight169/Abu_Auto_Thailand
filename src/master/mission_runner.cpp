@@ -10,6 +10,7 @@
 #include "kinematics.h"
 #include "lift_link.h"
 #include "mission_list.h"
+#include "odometry.h"
 #include "position_control.h"
 #include "robot_state.h"
 #include "tasks.h"
@@ -55,6 +56,7 @@ void stopMission(const char *reason)
   positionControlActive = false;
   boxParkingActive = false;
   liftMoveActive = false;
+  liftHomeActive = false;
 
   if (armTaskStatus == ARM_TASK_RUNNING)
   {
@@ -147,9 +149,12 @@ void resetBeforeMission()
 {
   stopRobot();
 
-  // รีเซ็ต Odometry
-  positionX = 0.0f;
-  positionY = 0.0f;
+  // รีเซ็ต Odometry -- resetOdometry() is the only place that also clears
+  // encoderHeadingRad, the heading the robot falls back to whenever the gyro
+  // is offline. Zeroing X/Y alone left the world frame rotated by whatever
+  // heading was still on the wheel encoders from the previous run, and every
+  // MOVE_STEP after the reset assumes yaw = 0.
+  resetOdometry();
 
   targetPositionX = 0.0f;
   targetPositionY = 0.0f;
@@ -166,7 +171,11 @@ void resetBeforeMission()
   boxParkingInToleranceSinceMs = 0;
   commandActive = false;
 
-  Serial7.println("LZ");
+  // Home through startLiftHome() rather than a raw LZ so the lift task knows a
+  // homing job is in flight. That is what lets parseLiftResponse() tell this
+  // job's LIFT_HOME_REACHED apart from the LIFT_STEP that follows a moment
+  // later, instead of letting it close that LIFT_STEP before the lift moves.
+  startLiftHome(RESET_HOME_TIMEOUT_MS);
 
   resetGyroYaw();
 
@@ -177,9 +186,12 @@ void resetBeforeMission2()
 {
   stopRobot();
 
-  // รีเซ็ต Odometry
-  positionX = 0.0f;
-  positionY = 0.0f;
+  // รีเซ็ต Odometry -- resetOdometry() is the only place that also clears
+  // encoderHeadingRad, the heading the robot falls back to whenever the gyro
+  // is offline. Zeroing X/Y alone left the world frame rotated by whatever
+  // heading was still on the wheel encoders from the previous run, and every
+  // MOVE_STEP after the reset assumes yaw = 0.
+  resetOdometry();
 
   targetPositionX = 0.0f;
   targetPositionY = 0.0f;
@@ -214,7 +226,7 @@ static void startCurrentMissionStep(const MissionStep &step)
     {
       Serial.println("RESET START");
       resetBeforeMission();
-      Serial.println("RESET COMPLETE");
+      Serial.println("RESET DONE - WAITING FOR LIFT HOME");
       break;
     }
 
@@ -532,7 +544,32 @@ static bool currentMissionStepDone(const MissionStep &step)
   switch (step.type)
   {
     case STEP_RESET:
-      return true;
+    {
+      // Wait for the homing that resetBeforeMission() started, so the lift
+      // encoders are genuinely zeroed before the run. liftHomeReached is only
+      // set by a reply that belongs to a homing job, so the LIFT_STEP that
+      // follows cannot be what closes this wait.
+      if (liftDone() && liftHomeReached)
+      {
+        Serial.println("RESET HOME COMPLETE");
+        return true;
+      }
+
+      // The wait is capped by RESET_HOME_TIMEOUT_MS, armed on the lift task by
+      // startLiftHome(). A lift that cannot home is a problem worth shouting
+      // about, but it must not keep the robot in the start zone, so the step
+      // gives up loudly and the mission continues.
+      if (liftFailed())
+      {
+        Serial.print("WARNING: RESET HOME DID NOT COMPLETE - CONTINUING AT front=");
+        Serial.print(liftPosFront);
+        Serial.print(" back=");
+        Serial.println(liftPosBack);
+        return true;
+      }
+
+      return false;
+    }
 
     case STEP_RESET_2:
       return true;

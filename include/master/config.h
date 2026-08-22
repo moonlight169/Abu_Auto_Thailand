@@ -258,6 +258,15 @@ constexpr uint32_t HIGH_NO_BOX_FORWARD_TIMEOUT_MS = 15000;
 // ------------------------------------------------------------- mission ----
 constexpr uint32_t DEFAULT_MOVE_TIMEOUT_MS = 30000;
 
+// RESET_STEP homes the lift and then waits for LIFT_HOME_REACHED, so the lift
+// encoders really are zeroed before a run instead of carrying the previous
+// run's drift. The wait is capped by this timeout, which startLiftHome() arms
+// on the lift task: when the lift cannot home in time the step prints a
+// warning and the mission carries on anyway. A stuck bottom limit switch must
+// never be able to keep the robot in the start zone. Raise this if a home from
+// full height legitimately takes longer.
+constexpr uint32_t RESET_HOME_TIMEOUT_MS = 8000;
+
 constexpr uint32_t LASER5_ARM_VERIFY_WAIT_MS   = 500;
 constexpr uint32_t LASER5_GRIPPER_OPEN_WAIT_MS = 500;
 constexpr uint32_t LASER5_ARM_RETURN_WAIT_MS   = 500;

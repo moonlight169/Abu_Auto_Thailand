@@ -32,6 +32,7 @@ void updateRobotTasks()
       (uint32_t)(now - liftTaskStartMs) >= liftTaskTimeoutMs)
   {
     liftMoveActive = false;
+    liftHomeActive = false;
     liftBusy = false;
     liftTaskStatus = TASK_TIMEOUT;
     Serial.print("ERROR: LIFT TIMEOUT targetF=");

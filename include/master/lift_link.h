@@ -26,7 +26,13 @@ extern int32_t liftPosBack;
 extern bool liftBusy;
 extern bool liftAtTarget;
 extern bool liftHomeReached;
+
+// Which job the single lift task belongs to. startLift() owns liftMoveActive
+// and startLiftHome() owns liftHomeActive, so a LIFT_REACHED that was already
+// on the wire cannot close a homing job and a LIFT_HOME_REACHED cannot close a
+// pulse move. Both replies mean "done" and there is only one liftTaskStatus.
 extern bool liftMoveActive;
+extern bool liftHomeActive;
 extern bool liftReached;
 
 extern uint32_t liftResponseSequence;

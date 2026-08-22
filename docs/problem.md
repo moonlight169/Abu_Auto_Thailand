@@ -4,10 +4,12 @@
 `mission_list.cpp`) ทุกข้อในนี้ยืนยันจากโค้ดแล้ว ไม่ใช่การเดา
 ข้อที่แก้แล้วให้ย้ายออกจากไฟล์นี้
 
+> **แก้ไปแล้ว 22 ส.ค. 2026:** ข้อ 1 (RESET_STEP home lift ไม่สำเร็จ + ปิดงานผิดตัว)
+> และข้อ 2 (RESET_STEP ไม่ล้าง `encoderHeadingRad`) ถอดออกจากไฟล์นี้แล้ว
+> เลขข้อที่เหลือ **คงเดิม ไม่ได้ไล่เบอร์ใหม่** เพื่อไม่ให้อ้างอิงเก่าเพี้ยน
+
 | # | เรื่อง | ระดับ | สถานะ |
 |---|--------|-------|-------|
-| 1 | RESET_STEP สั่ง home lift แล้วโดน LIFT_STEP ถัดไปยกเลิกทิ้ง | สูง | ยังไม่แก้ |
-| 2 | RESET_STEP ไม่ล้าง `encoderHeadingRad` | กลาง | ยังไม่แก้ |
 | 3 | LIDAR park ข้ามการยืนยัน 500 ms ได้ | กลาง | ยังไม่แก้ |
 | 4 | `HUB_WAIT_INPUT_STEP(HUB_LDR2, 1, 0)` รอไม่จำกัดเวลา 24 จุด | กลาง | ตั้งใจ? ต้องตัดสินใจ |
 | 5 | คำสั่งแขนหายเงียบตอน busy | ต่ำ | ยังไม่แก้ |
@@ -18,49 +20,6 @@
 | 10 | คีย์แพดไม่มีปุ่มยกเลิกที่หน้า RECHECK | กลาง | ยังไม่แก้ |
 
 ---
-
-## 1. RESET_STEP สั่ง home lift แล้วโดน LIFT_STEP ถัดไปยกเลิกทิ้ง
-
-**ที่มา** `mission_runner.cpp:169` — `resetBeforeMission()` ยิง `Serial7.println("LZ")`
-ดิบ ๆ ไม่ผ่าน `startLiftHome()` แล้ว `STEP_RESET` คืน done ทันที (`mission_runner.cpp:534`)
-มิชชันจึงเดินต่อโดยไม่รอ homing
-
-**ผลที่แน่นอน** — มี **98 โปรแกรมที่ `LIFT_STEP` ต่อจาก `RESET_STEP()` ทันที**
-(ทั้งหมดของ Mode 0) ฝั่ง slave `setTarget()` มีบรรทัด `homing = false;`
-(`slave_lift/lift_control.cpp:78`) แปลว่าคำสั่ง `LP` ที่มาถึงในอีก 1-2 ms
-ยกเลิก homing ทิ้งก่อนมันจะทำงานเสร็จ **lift จึงไม่เคย home จริงตอนเริ่มมิชชัน**
-และ `resetFrontEncoder()` / `resetBackEncoder()` ที่รันเฉพาะตอนแตะลิมิตล่างก็ไม่เคยถูกเรียก
-ถ้า encoder ของ lift เพี้ยนสะสม RESET_STEP แก้ให้ไม่ได้ ทั้งที่เจตนาของโค้ดคือจะแก้
-
-**ผลที่ขึ้นกับจังหวะ** — ถ้า lift นอนอยู่บนลิมิตล่างทั้งสองเสาอยู่แล้ว (เช่นเพิ่งกดปุ่มเหลือง)
-และมี control tick ของ slave (ทุก 10 ms) แทรกระหว่าง `LZ` กับ `LP` พอดี slave จะส่ง
-`LIFT_HOME_REACHED` ออกมาในทิกเดียว ฝั่ง master จับมันที่ `lift_link.cpp:136-141`
-ซึ่งเซ็ต `liftTaskStatus = TASK_DONE` **โดยไม่เช็คว่ามีใครสั่ง home อยู่จริงหรือเปล่า**
-→ `LIFT_STEP` ที่เพิ่งเริ่มถูกปิดงานทันทีทั้งที่ lift ยังไม่ถึงเป้า
-
-อาการสมมาตรก็มี: `LIFT_REACHED` ที่มาช้า (`lift_link.cpp:106-117`) ปิดงาน home ผิดตัวได้
-`STEP_FORWARD_LZ_BACK` กันเคสนี้ไว้แล้วด้วย `if (!liftDone() || !liftHomeReached)`
-พร้อมคอมเมนต์อธิบาย — แปลว่ารู้จัก race ตัวนี้แล้ว แต่กันไว้แค่จุดเดียว
-
-**แนวทางแก้** ใน `parseLiftResponse()` แยกสองงานออกจากกันด้วยแฟล็กที่มีอยู่แล้ว
-(`startLift()` เซ็ต `liftMoveActive = true`, `startLiftHome()` เซ็ต false):
-`LIFT_HOME_REACHED` ปิดงานได้เฉพาะตอน `!liftMoveActive` และ `LIFT_REACHED`
-ปิดได้เฉพาะตอน `liftMoveActive` · แล้วให้ `resetBeforeMission()` เรียก `startLiftHome()`
-แทนการยิง `LZ` ดิบ ถ้าอยากให้ home จริง
-
-## 2. RESET_STEP ไม่ล้าง encoderHeadingRad
-
-`resetBeforeMission()` และ `resetBeforeMission2()` (`mission_runner.cpp:146-200`)
-ล้าง `positionX/Y` และเรียก `resetGyroYaw()` แต่ไม่เคยเรียก `resetOdometry()`
-ซึ่งเป็นที่เดียวที่เซ็ต `encoderHeadingRad = 0`
-
-หลัง RESET จึงได้: X/Y = 0, gyro yaw = 0, แต่ **encoder heading ยังค้างค่าเดิม**
-ถ้า gyro หลุด (`gyroOnline == false`) `getRobotYawRad()` จะคืนค่าที่ค้างนั้น
-ในขณะที่ทุก `MOVE_STEP` ตั้งเป้าโดยสมมติว่า yaw = 0 → เฟรมโลกเอียงไปเท่าค่าที่ค้าง
-และตัวคุม yaw จะหมุนหุ่นไปหักล้างมัน
-
-ปุ่ม SW_YELLOW เรียก `resetOdometry()` ถูกต้องอยู่แล้ว (`hub_buttons.cpp:55`)
-เป็นหลักฐานว่าฝั่ง RESET_STEP ลืม
 
 ## 3. LIDAR park ข้ามการยืนยัน 500 ms ได้
 
@@ -147,12 +106,11 @@ Serial3/Serial6 ด้วย ถ้าไม่ได้จะใช้ควร
 
 | ข้อ | กดปุ่มเหลืองก่อนเริ่มช่วยไหม |
 |---|---|
-| 1 | ไม่ช่วย และ**เพิ่มโอกาสยิง** — มันทำให้ lift ไปนอนบนลิมิตล่างซึ่งเป็นเงื่อนไขของ race พอดี |
-| 2 | ช่วย — `resetOdometry()` ล้าง `encoderHeadingRad` ให้จริง |
 | 3 | ไม่เกี่ยวเลย |
 | 4 | กันไม่ได้ แต่ใช้กดหนีตอนค้างได้ (`stopMission("SW_Y RESET")`) |
 | 5 | **สร้างปัญหา** ถ้าเริ่มมิชชันเร็วเกินไป (ดูข้อ 5) |
 
-ข้อดีจริงข้อเดียวที่ไม่มีทางอื่นทดแทน: `onSwitchYellow()` เรียก `startLiftHome()`
-โดยไม่มีอะไรมายกเลิกต่อ มัน home สำเร็จจริง — เป็นทางเดียวในระบบตอนนี้ที่ lift
-ได้ตั้งศูนย์ encoder ใหม่ (เพราะ RESET_STEP ทำไม่สำเร็จตามข้อ 1)
+เหตุผลเดิมที่ต้องกดปุ่มเหลืองก่อนเริ่มทุกครั้ง คือมันเป็นทางเดียวที่ lift ได้ตั้งศูนย์
+encoder ใหม่ — **ตอนนี้ไม่จำเป็นแล้ว** เพราะ `RESET_STEP` home เองและรอจนเสร็จจริง
+เหลือข้อควรระวังข้อเดียวคือข้อ 5: อย่าเพิ่งกดเริ่มภารกิจจนกว่า console จะขึ้น
+`ARM RESET: HOME COMPLETE`

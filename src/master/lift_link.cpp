@@ -19,6 +19,7 @@ bool liftBusy = false;
 bool liftAtTarget = false;
 bool liftHomeReached = false;
 bool liftMoveActive = false;
+bool liftHomeActive = false;
 bool liftReached = false;
 
 uint32_t liftResponseSequence = 0;
@@ -109,13 +110,26 @@ static bool parseLiftResponse(char *line)
     liftPosBack = (int32_t)back;
     liftFrontCount = (int32_t)front;
     liftBackCount = (int32_t)back;
+    liftResponseSequence++;
+
+    // This reply belongs to an LP move. startLiftHome() clears liftMoveActive,
+    // so a frame that was already on the wire can no longer report a homing
+    // job finished the moment it started.
+    if (!liftMoveActive)
+    {
+      Serial.print("LIFT_REACHED IGNORED (NO MOVE ACTIVE) front=");
+      Serial.print(liftPosFront);
+      Serial.print(" back=");
+      Serial.println(liftPosBack);
+      return true;
+    }
+
     liftMoveActive = false;
     liftReached = true;
     liftBusy = false;
     liftAtTarget = true;
     liftConfirmCount = LIFT_CONFIRM_REQUIRED;
     liftTaskStatus = TASK_DONE;
-    liftResponseSequence++;
 
     Serial.print("LIFT_POSITION_OK front=");
     Serial.print(liftPosFront);
@@ -135,11 +149,23 @@ static bool parseLiftResponse(char *line)
 
   if (strcmp(line, "LIFT_HOME_REACHED") == 0)
   {
+    liftResponseSequence++;
+
+    // This reply belongs to an LZ job. RESET_STEP sends LZ and the LIFT_STEP
+    // behind it sends LP about a millisecond later; without this guard the
+    // homing reply lands on that LP move and completes it before the lift has
+    // moved at all, which is how a LIFT_STEP used to pass without moving.
+    if (!liftHomeActive)
+    {
+      Serial.println("LIFT_HOME_REACHED IGNORED (NO HOME ACTIVE)");
+      return true;
+    }
+
+    liftHomeActive = false;
     liftBusy = false;
     liftAtTarget = true;
     liftHomeReached = true;
     liftTaskStatus = TASK_DONE;
-    liftResponseSequence++;
     return true;
   }
 
@@ -149,6 +175,7 @@ static bool parseLiftResponse(char *line)
     liftAtTarget = false;
     liftHomeReached = false;
     liftMoveActive = false;
+    liftHomeActive = false;
     liftTaskStatus = TASK_ERROR;
     liftResponseSequence++;
     Serial.print("ERROR FROM LIFT STM32: ");
@@ -199,6 +226,7 @@ void startLift(int32_t front, int32_t back, uint32_t timeoutMs)
   liftTargetFront = front;
   liftTargetBack = back;
   liftMoveActive = true;
+  liftHomeActive = false;
   liftReached = false;
   liftAtTarget = false;
   liftHomeReached = false;
@@ -212,7 +240,13 @@ void startLift(int32_t front, int32_t back, uint32_t timeoutMs)
 
 void startLiftHome(uint32_t timeoutMs)
 {
+  // Homing ends at zero on both columns. Mirroring that here keeps the
+  // "LIFT TIMEOUT targetF=... targetB=..." message honest when the job that
+  // times out is a home rather than the LP move that ran before it.
+  liftTargetFront = 0;
+  liftTargetBack = 0;
   liftMoveActive = false;
+  liftHomeActive = true;
   liftReached = false;
   liftAtTarget = false;
   liftHomeReached = false;
@@ -277,6 +311,7 @@ bool moveLiftPulseAndWait(int32_t front, int32_t back, uint32_t timeoutMs)
   liftTargetFront = front;
   liftTargetBack = back;
   liftMoveActive = true;
+  liftHomeActive = false;
   liftReached = false;
   liftAtTarget = false;
   liftBusy = true;
@@ -316,6 +351,8 @@ bool homeLiftAndWait(uint32_t timeoutMs)
   const uint32_t sequenceBeforeCommand = liftResponseSequence;
   liftAtTarget = false;
   liftHomeReached = false;
+  liftMoveActive = false;
+  liftHomeActive = true;
   sendLiftCommandZero();
 
   const uint32_t startMs = millis();
