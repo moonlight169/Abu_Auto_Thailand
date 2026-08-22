@@ -168,7 +168,7 @@ constexpr float MOVE_STANDBY_SLIDE_L1_BLUE = 1.2;
 constexpr float MOVE_STANDBY_YAW_L1_BLUE = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L1_BLUE = 1.0;
 
-constexpr float MOVE_RAMP_FORWARD_L1_BLUE = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L1_BLUE = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L1_BLUE = 1.2;
 constexpr float MOVE_RAMP_YAW_L1_BLUE = 0.0;
 constexpr float MOVE_RAMP_SPEED_L1_BLUE = 1.5;
@@ -194,7 +194,7 @@ constexpr float MOVE_STANDBY_SLIDE_L2_BLUE = 2.4;
 constexpr float MOVE_STANDBY_YAW_L2_BLUE = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L2_BLUE = 1.5;
 
-constexpr float MOVE_RAMP_FORWARD_L2_BLUE = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L2_BLUE = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L2_BLUE = 2.4;
 constexpr float MOVE_RAMP_YAW_L2_BLUE = 0.0;
 constexpr float MOVE_RAMP_SPEED_L2_BLUE = 1.5;
@@ -221,7 +221,7 @@ constexpr float MOVE_STANDBY_SLIDE_L3_BLUE = 3.6;
 constexpr float MOVE_STANDBY_YAW_L3_BLUE = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L3_BLUE = 1.5;
 
-constexpr float MOVE_RAMP_FORWARD_L3_BLUE = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L3_BLUE = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L3_BLUE = 3.6;
 constexpr float MOVE_RAMP_YAW_L3_BLUE = 0.0;
 constexpr float MOVE_RAMP_SPEED_L3_BLUE = 1.5;
@@ -247,7 +247,7 @@ constexpr float MOVE_STANDBY_SLIDE_L1_RED = -1.2;
 constexpr float MOVE_STANDBY_YAW_L1_RED = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L1_RED = 1.5;
 
-constexpr float MOVE_RAMP_FORWARD_L1_RED = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L1_RED = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L1_RED = -1.2;
 constexpr float MOVE_RAMP_YAW_L1_RED = 0.0;
 constexpr float MOVE_RAMP_SPEED_L1_RED = 1.5;
@@ -273,7 +273,7 @@ constexpr float MOVE_STANDBY_SLIDE_L2_RED = -2.4;
 constexpr float MOVE_STANDBY_YAW_L2_RED = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L2_RED = 1.5;
 
-constexpr float MOVE_RAMP_FORWARD_L2_RED = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L2_RED = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L2_RED = -2.4;
 constexpr float MOVE_RAMP_YAW_L2_RED = 0.0;
 constexpr float MOVE_RAMP_SPEED_L2_RED = 1.5;
@@ -300,7 +300,7 @@ constexpr float MOVE_STANDBY_SLIDE_L3_RED = -3.6;
 constexpr float MOVE_STANDBY_YAW_L3_RED = 0.0;
 constexpr float MOVE_STANDBY_SPEED_L3_RED = 1.5;
 
-constexpr float MOVE_RAMP_FORWARD_L3_RED = 3.0;
+constexpr float MOVE_RAMP_FORWARD_L3_RED = 10.0;
 constexpr float MOVE_RAMP_SLIDE_L3_RED = -3.6;
 constexpr float MOVE_RAMP_YAW_L3_RED = 0.0;
 constexpr float MOVE_RAMP_SPEED_L3_RED = 1.5;
