@@ -144,6 +144,9 @@ constexpr float MOVE_SLIDE_AFTERLIMIT_RED = -0.1;
 constexpr float MOVE_YAW_AFTERLIMIT_RED = 0.0;
 constexpr float MOVE_SPEED_AFTERLIMIT_RED = 0.5;
 
+constexpr float MOVE_TIME_SPEED = 0.3;
+constexpr uint32_t MOVE_TIMER_MS = 3000;
+
 // FIELD BLUE LINE 1
 constexpr float MOVE_START_FORWARD_L1_BLUE = 3.8;
 constexpr float MOVE_START_SLIDE_L1_BLUE = 5.8;
