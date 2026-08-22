@@ -21,6 +21,14 @@ static uint16_t hubButtonStableMask = 0;
 static uint32_t hubButtonChangedMs[ARRAY_COUNT(HUB_BUTTON_BITS)] = {};
 static bool hubButtonsInitialized = false;
 
+// --- ตัวแปรสำหรับจัดการการกดปุ่มพร้อมกัน (Combo Window) ---
+static bool pendingBlue = false;
+static bool pendingRed = false;
+static uint32_t pendingBlueMs = 0;
+static uint32_t pendingRedMs = 0;
+// ระยะเวลารอให้กดปุ่มที่ 2 (100 มิลลิวินาที คือระดับที่มนุษย์ไม่รู้สึกว่าช้า แต่โค้ดทำงานได้ชัวร์)
+static constexpr uint32_t COMBO_WINDOW_MS = 100; 
+
 // SW_Y opens the gripper for YELLOW_RELAY4_PULSE_MS, then closes it again.
 static bool yellowRelay4PulseActive = false;
 static uint32_t yellowRelay4PulseStartMs = 0;
@@ -59,11 +67,9 @@ static void onSwitchYellow()
   setHubRelay(2, 0);
   setHubRelay(3, 0);
 
-  setHubArm(5);
+  setHubArm(10);
   setHubSpin(0);
   startLiftHome();
-
-  startArmClearAndHome();
 
   setHubRelay(4, 1);
   yellowRelay4PulseActive = true;
@@ -82,16 +88,13 @@ static void updateYellowRelay4Pulse()
   }
 }
 
-// Addressed by name, never by position. The registry holds 129 entries now
-// and grows every time a keypad pattern is filled in; an index would silently
-// point somewhere else the moment anything is inserted or reordered. A typo
-// here shows up at run time as UNKNOWN MISSION CODE instead of at compile
-// time, which is the one thing given up in exchange.
+// Addressed by name, never by position.
 static constexpr const char *BLUE_BUTTON_MISSION = "MISSION 2";  // mission2
 static constexpr const char *RED_BUTTON_MISSION = "MISSION 1";   // mission1
 
 static void handleHubButtonPressed(uint8_t bit)
 {
+  // 1. นำ Combo logic ออกจากตรงนี้ แล้วให้ทำงานเฉพาะปุ่มเดี่ยว
   switch (bit)
   {
     case HUB_SW_BLUE:
@@ -160,12 +163,59 @@ void updateHubButtons()
       if (rawPressed)
       {
         hubButtonStableMask |= mask;
-        handleHubButtonPressed(HUB_BUTTON_BITS[i]);
+        
+        // 2. เมื่อปุ่มถูกกด แทนที่จะรัน Mission ทันที ให้ตั้งธงพักไว้ (Pending) ก่อน
+        if (HUB_BUTTON_BITS[i] == HUB_SW_BLUE)
+        {
+          pendingBlue = true;
+          pendingBlueMs = now;
+        }
+        else if (HUB_BUTTON_BITS[i] == HUB_SW_RED)
+        {
+          pendingRed = true;
+          pendingRedMs = now;
+        }
+        else
+        {
+          // ปุ่มเหลือง หรือปุ่มอื่นๆ ให้ทำงานทันทีไม่ต้องรอ Combo
+          handleHubButtonPressed(HUB_BUTTON_BITS[i]);
+        }
       }
       else
       {
         hubButtonStableMask &= (uint16_t)~mask;
       }
+    }
+  }
+
+  // 3. ตรวจสอบสถานะ Combo นอก Loop
+  if (pendingBlue && pendingRed)
+  {
+    // หากมีการกดทั้งสองปุ่มค้างไว้ในระบบ (กดห่างกันไม่เกิน 100ms)
+    Serial.println("SW_BLUE + SW_RED PRESSED - ARM CLEAR AND HOME");
+    
+    // บังคับหยุด Mission กรณีหลุดรอดมา และหยุด Robot ด้วยเพื่อความปลอดภัย
+    if (missionRunning) stopMission("COMBO OVERRIDE");
+    
+    startArmClearAndHome();
+    
+    // ล้างสถานะเพื่อไม่ให้ทำงานซ้ำ
+    pendingBlue = false;
+    pendingRed = false;
+  }
+  else
+  {
+    // 4. ถ้ากดแค่ปุ่มเดียว แล้วเวลาผ่านไปเกิน 100ms (แน่ใจแล้วว่าไม่ได้กด 2 ปุ่ม) จึงค่อยรัน Mission
+    if (pendingBlue && (uint32_t)(now - pendingBlueMs) >= COMBO_WINDOW_MS)
+    {
+      handleHubButtonPressed(HUB_SW_BLUE);
+      pendingBlue = false;
+    }
+    
+    if (pendingRed && (uint32_t)(now - pendingRedMs) >= COMBO_WINDOW_MS)
+    {
+      handleHubButtonPressed(HUB_SW_RED);
+      pendingRed = false;
     }
   }
 }
