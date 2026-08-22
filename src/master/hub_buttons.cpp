@@ -29,6 +29,22 @@ static uint32_t pendingRedMs = 0;
 // ระยะเวลารอให้กดปุ่มที่ 2 (100 มิลลิวินาที คือระดับที่มนุษย์ไม่รู้สึกว่าช้า แต่โค้ดทำงานได้ชัวร์)
 static constexpr uint32_t COMBO_WINDOW_MS = 100; 
 
+// การกดปุ่มมีความหมายเฉพาะตอนลิงก์ hub ยังดีอยู่ ถ้าลิงก์หลุดต้องทิ้งปุ่มที่ยังไม่ได้ยิง
+// เพราะหน้าต่าง combo แค่ 100 ms แต่ลิงก์หลุดทีเป็นวินาที พอกลับมา now - pendingMs
+// จะเกิน 100 แน่นอน แล้วมิชชันจะเริ่มเองทั้งที่ไม่มีใครกด
+//
+// พิมพ์เฉพาะตอนมีของให้ทิ้งจริง ไม่งั้นจะสแปมทุกรอบลูปตอน hub ออฟไลน์
+static void clearPendingButtons(const char *reason)
+{
+  if (!pendingBlue && !pendingRed)
+    return;
+
+  pendingBlue = false;
+  pendingRed = false;
+  Serial.print("HUB BUTTON PRESS DISCARDED: ");
+  Serial.println(reason);
+}
+
 // SW_Y opens the gripper for YELLOW_RELAY4_PULSE_MS, then closes it again.
 static bool yellowRelay4PulseActive = false;
 static uint32_t yellowRelay4PulseStartMs = 0;
@@ -120,6 +136,7 @@ void updateHubButtons()
   if (!hub.online)
   {
     hubButtonsInitialized = false;
+    clearPendingButtons("HUB OFFLINE");
     return;
   }
 
@@ -137,6 +154,9 @@ void updateHubButtons()
     for (size_t i = 0; i < ARRAY_COUNT(HUB_BUTTON_BITS); i++)
       hubButtonChangedMs[i] = now;
     hubButtonsInitialized = true;
+
+    // เพิ่งตั้ง baseline ใหม่จากสถานะปัจจุบัน อย่าให้เจตนาจากก่อนหน้าข้ามมาด้วย
+    clearPendingButtons("HUB LINK RESYNC");
     return;
   }
 
