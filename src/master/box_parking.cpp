@@ -175,11 +175,23 @@ void updateBoxParking()
     setLocalVelocity(0.0f, 0.0f, 0.0f);
     sendTargetPacket();
 
+    // Zero is the "hold has not started" sentinel, and the hold only starts on
+    // a fresh Hub frame. Without the != 0 test below, a first tick inside
+    // tolerance that carries no new frame leaves the stamp at zero, and
+    // now - 0 is the time since boot -- always past PARK_DONE_HOLD_MS, so the
+    // park finished on the spot with no confirmation at all.
+    //
+    // A tick with no new frame needs the two free-running 50 ms timers here
+    // and on the Hub to drift into the same window, or a Hub packet to be
+    // lost. That is the uncommon case, not the usual one, which is exactly
+    // what made it survive this long: the hold worked nearly every time and
+    // skipped silently when it did not.
     if (newBoxFrame && boxParkingInToleranceSinceMs == 0)
       boxParkingInToleranceSinceMs = now;
 
-    if ((uint32_t)(now - boxParkingInToleranceSinceMs) >=
-        PARK_DONE_HOLD_MS)
+    if (boxParkingInToleranceSinceMs != 0 &&
+        (uint32_t)(now - boxParkingInToleranceSinceMs) >=
+            PARK_DONE_HOLD_MS)
     {
       boxParkingActive = false;
       boxParkingTaskStatus = TASK_DONE;
