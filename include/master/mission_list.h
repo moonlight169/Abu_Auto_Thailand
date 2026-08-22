@@ -75,6 +75,9 @@ constexpr int32_t RELAY_BACK = 3;
 constexpr int32_t RELAY3_ON = 0;
 constexpr int32_t RELAY3_OFF = 1;
 
+constexpr int32_t RELAY4_ON = 1;
+constexpr int32_t RELAY4_OFF = 0;
+
 constexpr uint32_t WAIT_STEP_MS = 100;
 
 //-----------------------------------------
@@ -131,12 +134,12 @@ constexpr uint32_t TIMEOUT_LZ_BACK = 15000;
 constexpr float FORWARD_SPEED_LIMIT = 0.5;
 constexpr uint32_t TIMEOUT_LIMIT = 15000;
 
-constexpr float MOVE_FORWARD_AFTERLIMIT_BLUE = 0.1;
+constexpr float MOVE_FORWARD_AFTERLIMIT_BLUE = 0.3;
 constexpr float MOVE_SLIDE_AFTERLIMIT_BLUE = 0.1;
 constexpr float MOVE_YAW_AFTERLIMIT_BLUE = 0.0;
 constexpr float MOVE_SPEED_AFTERLIMIT_BLUE = 0.5;
 
-constexpr float MOVE_FORWARD_AFTERLIMIT_RED = 0.1;
+constexpr float MOVE_FORWARD_AFTERLIMIT_RED = 0.3;
 constexpr float MOVE_SLIDE_AFTERLIMIT_RED = -0.1;
 constexpr float MOVE_YAW_AFTERLIMIT_RED = 0.0;
 constexpr float MOVE_SPEED_AFTERLIMIT_RED = 0.5;
