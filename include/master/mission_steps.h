@@ -22,6 +22,7 @@ enum MissionStepType : uint8_t
   STEP_RESET_2,
   STEP_LIFT,
   STEP_MOVE,
+  STEP_MOVE_TIME,
   STEP_LIDAR_PARK,
   STEP_WALL_ALIGN,
   STEP_MOVE_UNTIL_FRONT,
@@ -77,6 +78,23 @@ struct MissionProgram
 #define MOVE_STEP(x, y, yawDeg, maxSpeed) \
   { STEP_MOVE, (float)(x), (float)(y), (float)(yawDeg), \
     (float)(maxSpeed), DEFAULT_MOVE_TIMEOUT_MS }
+
+// Open-loop drive: hold one body-frame speed for a fixed time, then stop.
+// Nothing is consulted while it runs -- not odometry, not the gyro, not a
+// sensor -- so this is the step for the places where MOVE_STEP has nothing
+// trustworthy to steer by: crossing a step edge, or a surface where the wheels
+// slip and the position controller would chase a pose it can never reach.
+//
+// speed is m/s in the robot frame: positive drives forward, negative reverses.
+// timeMs is the whole duration of the step; there is no failure condition, the
+// step always ends by stopping the robot.
+//
+// The V/G ramp still applies, so the first moments are spent getting up to
+// speed and the distance covered is a little short of speed * timeMs. Tune the
+// time against the real robot rather than calculating it.
+#define MOVE_TIME_STEP(speed, timeMs) \
+  { STEP_MOVE_TIME, (float)(speed), 0.0f, 0.0f, \
+    0.0f, (uint32_t)(timeMs) }
 
 #define LIDAR_PARK_STEP(distanceMm, timeoutMs) \
   { STEP_LIDAR_PARK, (float)(distanceMm), 0.0f, 0.0f, \

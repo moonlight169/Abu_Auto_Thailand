@@ -89,6 +89,7 @@ struct MissionStep {
 | มาโคร | พารามิเตอร์ | จบเมื่อ / fail เมื่อ |
 |-------|-------------|---------------------|
 | `MOVE_STEP(x, y, yawDeg, maxSpeed)` | เป้าหมาย **global frame** (m, m, deg) นับจาก reset ล่าสุด, `maxSpeed` เป็น m/s | เข้า tolerance 0.05 m / 3° ครบ 10 รอบ · fail เมื่อครบ 30 s |
+| `MOVE_TIME_STEP(speed, timeMs)` | เดินตรงใน **local frame** ตามเวลา ไม่ดู odometry / gyro / เซนเซอร์เลย · ค่าบวก = เดินหน้า, ค่าลบ = ถอย | ครบ `timeMs` แล้วหยุดเอง · **ไม่มีเงื่อนไข fail** |
 | `FRONT_LIMIT_STEP(speed, timeoutMs)` | เดินหน้าตรงจนลิมิตสวิตช์หน้า `L_SW_FRONT` ถูกกด | สวิตช์กด · fail เมื่อ hub offline หรือหมดเวลา |
 | `LASER3_FORWARD_STEP(speed, timeoutMs)` | เดินหน้าจน **TF2** < 15 cm | TF2 ถึงระยะ · fail เมื่อ hub offline / หมดเวลา |
 | `LASER4_FORWARD_STEP(speed, timeoutMs)` | เดินหน้าจน **TF1** < 20 cm | TF1 ถึงระยะ · fail เหมือนกัน |

@@ -257,6 +257,26 @@ static void startCurrentMissionStep(const MissionStep &step)
 
       break;
 
+    case STEP_MOVE_TIME:
+      Serial.println("MOVE BY TIME START");
+      missionWaitStartMs = millis();
+
+      // Nothing else may be steering while this runs. A MOVE_STEP that was
+      // aborted, or a "P," typed on the console before the mission started,
+      // would otherwise leave the position controller in charge and the robot
+      // would drive to that old target instead of straight ahead.
+      positionControlActive = false;
+
+      commandLocalVelocity(step.p1, 0.0f, 0.0f);
+      commandActive = true;
+
+      Serial.print("LOCAL SPEED=");
+      Serial.print(step.p1, 3);
+      Serial.print(" m/s FOR ");
+      Serial.print(step.timeoutMs);
+      Serial.println(" ms");
+      break;
+
     case STEP_LIDAR_PARK:
       Serial.println("LIDAR PARK START");
       startBoxParking(step.p1, step.timeoutMs);
@@ -579,6 +599,17 @@ static bool currentMissionStepDone(const MissionStep &step)
 
     case STEP_MOVE:
       return moveDone();
+
+    case STEP_MOVE_TIME:
+      // The only exit is the clock. There is no sensor to lose and no target
+      // to miss, so this step has no entry in currentMissionStepFailed().
+      if ((uint32_t)(millis() - missionWaitStartMs) < step.timeoutMs)
+        return false;
+
+      stopRobot();
+      commandActive = false;
+      Serial.println("MOVE BY TIME DONE - ROBOT STOP");
+      return true;
 
     case STEP_LIDAR_PARK:
       return boxParkingDone();
