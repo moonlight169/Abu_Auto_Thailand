@@ -24,8 +24,8 @@
 #define F103_SERIAL_BAUD 115200
 
 // ===== OLED 1.3" SH1106 128x64 (Software I2C using U8g2) =====
-#define OLED_SOFT_SCL PB10
-#define OLED_SOFT_SDA PB11
+#define OLED_SOFT_SCL PA8
+#define OLED_SOFT_SDA PB14
 
 // ===== 4x4 Matrix Keypad (ZX-SW16) =====
 // IDC 8-pin header:
